@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QGraphicsView view(&scene);
 
     QImage img;
-    img.load("E:/Sleaf.jpg");
+    img.load("E:/leaf.jpg");
 
     QGraphicsPixmapItem item( QPixmap::fromImage(img));
     scene.addItem(&item);
