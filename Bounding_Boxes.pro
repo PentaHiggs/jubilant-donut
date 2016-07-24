@@ -15,9 +15,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         window_main.cpp \
-    imagedownloader.cpp
+    imagedownloader.cpp \
+    xmlimageloader.cpp \
+    labeledimage.cpp
 
 HEADERS  += window_main.h \
-    imagedownloader.h
+    imagedownloader.h \
+    xmlimageloader.h \
+    labeledimage.h
 
 FORMS    += window_main.ui

@@ -1,29 +1,42 @@
 #include "imagedownloader.h"
+#include <QTimer>
+#include <QEventLoop>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
-ImageDownloader::ImageDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
+ImageDownloader::ImageDownloader(QObject *parent = 0)
 {
-    connect(
-        &m_WebCtrl,
-        SIGNAL (finished(QNetworkReply*)),
-        this,
-        SLOT (imageDownloaded(QNetworkReply*))
-        );
+   nManager = new QNetworkAccessManager(parent);
+}
+
+ImageDownloader::~ImageDownloader() {
+   delete nManager;
+}
+
+ImageDownloader::download(QUrl imageUrl) {
+    QTimer timer;
+    QEventLoop loop;
+
+    t.setSingleShot(true);
+
+    connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    connect(&nManager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
 
     QNetworkRequest request(imageUrl);
-    m_WebCtrl.get(request);
-}
+    QNetworkReply *reply = nManager.get(request);
 
-ImageDownloader::~ImageDownloader() { }
+    timer.start(10000); // 20 second timeout
+    loop.exec();
 
-void ImageDownloader::imageDownloaded(QNetworkReply* pReply) {
-    m_DownloadedImageData = pReply->readAll();
-
-    pReply -> deleteLater();
-    emit downloaded();
-}
-
-QPixmap ImageDownloader::downloadedImage() const {
-    QPixmap img;
-    img.loadFromData(m_DownloadedImageData);
-    return img;
+    QPixmap img = QPixmap(parent);
+    if (t.isActive()){
+        // success!
+        data = reply->readAll();
+        QPixmap img = QPixmap(parent);
+        img.loadFromData(data);
+        return img;
+    } else {
+        // failure : <
+        return img;
+    }
 }
