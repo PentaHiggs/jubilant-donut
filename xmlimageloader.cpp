@@ -10,6 +10,7 @@
 
 XmlImageLoader::XmlImageLoader(QIODevice *xmlFile)
 {
+    xml = QXmlStreamReader(xmlFile);
     imgDownloader = ImageDownloader();
     xml.setDevice(xmlFile);
 
