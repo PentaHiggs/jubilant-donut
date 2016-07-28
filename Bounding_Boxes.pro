@@ -27,3 +27,5 @@ HEADERS  += window_main.h \
     imagelabellingscene.h
 
 FORMS    += window_main.ui
+
+INCLUDEPATH += $$PWD/Eigen/

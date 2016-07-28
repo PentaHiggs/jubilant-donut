@@ -12,6 +12,7 @@ public:
     ImageLabellingScene();
     ImageLabellingScene(LabeledImage labeledImage);
     ~ImageLabellingScene();
+
 public slots:
     void mouseEnterImage(QPointF point);
     void mouseMoveOnImage(QPointF point);

@@ -7,6 +7,7 @@
 #include <QUrl>
 #include <QGraphicsPixmapItem>
 #include <QGraphicSceneHoverEvent>
+#include <Eigen/LU>
 
 typedef struct
 {
@@ -29,15 +30,15 @@ typedef struct
      * homogenous coordinates are being used.
      *
      */
-    int m11;
-    int m12;
-    int m13;
-    int m21;
-    int m22;
-    int m23;
-    int m31;
-    int m32;
-    int m33;
+    float m11;
+    float m12;
+    float m13;
+    float m21;
+    float m22;
+    float m23;
+    float m31;
+    float m32;
+    float m33;
 } bRectTransform;
 
 class LabeledImage : public QGraphicsPixmapItem
@@ -49,6 +50,7 @@ public:
     ~LabeledImage();
     QString label;
     QVector< std::pair<bRect, bRectTransform> > *bBoxes;
+    void setRectTransform(QPoint A, QPoint B, QPoint C, QPoint D);
     int width;
     int height;
 signals:
