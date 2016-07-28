@@ -5,7 +5,8 @@
 LabeledImage::LabeledImage()
 {
     QGraphicsPixmapItem::QGraphicsPixmapItem();
-    QWidget::setMouseTracking(true);
+    this->setAttribute(Qt::WA_Hover, true);
+    setAcceptHoverEvents(true);
 }
 
 LabeledImage::~LabeledImage() {
@@ -13,7 +14,22 @@ LabeledImage::~LabeledImage() {
     QGraphicsPixmapItem::~QGraphicsPixmapItem();
 }
 
-void LabeledImage::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-    // insert function call to draw the crosshairs
-    QGraphicsPixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+virtual void LabeledImage::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
+    emit mouseEnterImage(event->scenePos());
+    QGraphicsPixmapItem::hoverEnterEvent(event);
+}
+
+virtual void LabeledImage::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
+    emit mouseMoveOnImage(event->scenePos());
+    QGraphicsPixmapItem::hoverMoveEvent(event);
+}
+
+virtual void LabeledImage::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+    emit mouseLeaveImage();
+    QGraphicsPixmapItem::hoverLeaveEvent(event);
+}
+
+virtual void LabeledImage::mouseReleaseEvent(QGraphicsSceneHoverEvent *event){
+    emit mouseClickImage(event->scenePos());
+    QGraphicsPixmapItem::mouseReleaseEvent(event);
 }

@@ -17,11 +17,13 @@ SOURCES += main.cpp\
         window_main.cpp \
     imagedownloader.cpp \
     xmlimageloader.cpp \
-    labeledimage.cpp
+    labeledimage.cpp \
+    imagelabellingscene.cpp
 
 HEADERS  += window_main.h \
     imagedownloader.h \
     xmlimageloader.h \
-    labeledimage.h
+    labeledimage.h \
+    imagelabellingscene.h
 
 FORMS    += window_main.ui
