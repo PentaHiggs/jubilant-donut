@@ -85,18 +85,24 @@ LabeledImage* XmlImageLoader::loadPicture(){
 
             xml.readNextStartElement();
             if (xml.name() != "shear_rect") return nullptr;
-            xml.readNextStartElement(); // <dx>
-            bTrans.x = xml.readElementText().toInt();
-            xml.readNextStartElement(); // <dy>
-            bTrans.y = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m11>
-            bTrans.w = xml.readElementText().toInt();
+            bTrans.m11 = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m12>
-            bTrans.h = xml.readElementText().toInt();
+            bTrans.m12 = xml.readElementText().toInt();
+            xml.readNextStartElement(); // <m13>
+            bTrans.m13 = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m21>
-            bTrans.w = xml.readElementText().toInt();
+            bTrans.m21 = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m22>
-            bTrans.h = xml.readElementText().toInt();
+            bTrans.m22 = xml.readElementText().toInt();
+            xml.readNextStartElement(); // <m23>
+            bTrans.m23 = xml.readElementText().toInt();
+            xml.readNextStartElement(); // <m31>
+            bTrans.m31 = xml.readElementText().toInt();
+            xml.readNextStartElement(); // <m32>
+            bTrans.m32 = xml.readElementText().toInt();
+            xml.readNextStartElement(); // <m33>
+            bTrans.m33 = xml.readElementText().toInt();
 
             pair = std::make_pair(bRec, bTrans);
             img->bBoxes->append(pair);

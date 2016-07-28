@@ -25,17 +25,19 @@ typedef struct
 typedef struct
 {
     /*
-     * typedef for an affine linear trnsformation of a bRect, with the transformation
-     * [[m11, m12],[m21,m22]] * x + [[dx],[dy]]
-     * dx and dy are the translation coordinates
-     * m11, m12, m21, m22 are the matrix elements of a linear transformation
+     * typedef for for a linear transformation of a bRect in projective space, where
+     * homogenous coordinates are being used.
+     *
      */
-    int dx;
-    int dy;
     int m11;
     int m12;
+    int m13;
     int m21;
     int m22;
+    int m23;
+    int m31;
+    int m32;
+    int m33;
 } bRectTransform;
 
 class LabeledImage : public QGraphicsPixmapItem
