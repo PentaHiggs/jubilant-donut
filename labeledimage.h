@@ -5,6 +5,7 @@
 #include <QPixmap>
 #include <QVector>
 #include <QUrl>
+#include <QGraphicsPixmapItem>
 
 typedef struct
 {
@@ -36,13 +37,13 @@ typedef struct
     int m22;
 } bRectTransform;
 
-class labeledImage
+class LabeledImage : public QGraphicsPixmapItem
 {
 public:
-    labeledImage();
+    LabeledImage();
+    ~LabeledImage();
     QString label;
-    QPixmap image;
-    QVector< std::pair<bRect, bRectTransform> > bBoxes;
+    QVector< std::pair<bRect, bRectTransform> > *bBoxes;
     int width;
     int height;
 }

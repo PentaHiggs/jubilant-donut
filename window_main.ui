@@ -6,20 +6,370 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>622</height>
+    <width>1066</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>window_main</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>721</width>
+      <height>551</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Image</string>
+    </property>
+    <widget class="QGraphicsView" name="graphicsView">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>701</width>
+       <height>521</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_xmlFile">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>0</y>
+      <width>331</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>XML File</string>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>331</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QTextEdit" name="fileNameDisplayTextEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>71</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>71</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Open File</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="loadImagesXmlPushButton">
+        <property name="text">
+         <string>Load Images XML</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_interImageNavigation">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>90</y>
+      <width>331</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Inter-image Navigation</string>
+    </property>
+    <widget class="QPushButton" name="pushButtonLast">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt; Last</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonNext">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string> Next &gt;</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="textBoxImageNumber">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>60</y>
+       <width>241</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="textBoxImageLabel">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>100</y>
+       <width>241</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonSave">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>70</y>
+       <width>31</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Img #</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Img Label</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonJumpToImage">
+     <property name="geometry">
+      <rect>
+       <x>64</x>
+       <y>140</y>
+       <width>201</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Jump to Image...</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_intraImageNavigation">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>270</y>
+      <width>331</width>
+      <height>281</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Intra-image Navigation</string>
+    </property>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>331</width>
+       <height>251</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="page_startPage">
+      <widget class="QPushButton" name="pushButtonStartLabelling">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>40</y>
+         <width>211</width>
+         <height>171</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start Labelling</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_instructionsPage">
+      <widget class="QPushButton" name="pushButtonPreviousStep">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>121</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string> &lt; Previous Step </string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonNextStep">
+       <property name="geometry">
+        <rect>
+         <x>210</x>
+         <y>10</y>
+         <width>121</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Next Step &gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>40</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Current Instruction</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowserInstruction">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>311</width>
+         <height>61</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>130</y>
+         <width>111</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Instructions Completed</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowserInstructionsCompleted">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>150</y>
+         <width>321</width>
+         <height>101</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_yesNoPrompt">
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>281</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Are there any more bounding boxes to label in this image?</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonYes">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>60</y>
+         <width>131</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Yes</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonNo">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>150</y>
+         <width>131</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>No</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>1066</width>
      <height>21</height>
     </rect>
    </property>

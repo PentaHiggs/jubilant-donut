@@ -14,21 +14,25 @@ XmlImageLoader::XmlImageLoader(QIODevice *xmlFile)
     imgDownloader = ImageDownloader();
     xml.setDevice(xmlFile);
 
+    // This variable is increased by 1 every time we read a labeledImage
+    currentImgNo = -1;
+
     if (xml.readNextStartElement()) {
-        if (xml.name() == "picture_batch")
-            while(xml.readNextStartElement()){
-                if (xml.name() == "picture" )
-                {
-                    std::shared_ptr<labeledImage> img = new labeledImage();
-                    loadPicture(img);
-                }
-                else
-                    xml.skipCurrentElement();
-            }
+        if (xml.name() == "picture_batch") {
+            // We're good to go!
+        }
         else
             xml.raiseError(QObject::tr("The file is not a picture_batch file"));
     }
     return !xml.error();
+
+}
+
+LabeledImage *XmlImageLoader::next() {
+    // Find the next <picture> element.
+    while(xml.readNextStartElement() && !xml.name() == "picture")
+        xml.skipCurrentElement();
+    return loadPicture(img);
 }
 
 XmlImageLoader::errorString() const
@@ -39,7 +43,8 @@ XmlImageLoader::errorString() const
             .arg(xml.columnNumber());
 }
 
-XmlImageLoader::loadPicture(labeledImage *img){
+LabeledImage* XmlImageLoader::loadPicture(){
+    std::shared_ptr<LabeledImage> img = new LabeledImage();
     xml.readNextStartElement();
     if (xml.name() == "label")
     {
@@ -54,16 +59,13 @@ XmlImageLoader::loadPicture(labeledImage *img){
         resUrlText = xml.readElementText();
         resUrl = QUrl(resUrlText);
         QPixmap pixmap = imgDownloader.download(resUrlText);
-        img->image = pixmap;
+        img->setPixmap(pixmap);
     } else {
         return nullptr;
     }
-
     xml.readNextStartElement();
     if (xml.name() == "bounding_boxes")
     {
-        QVector< std::pair<bRect, bRectTransform> > list = QVector();
-
         while( xml.readNextStartElement() && (xml.name() == "bounding_box") )
         {
             std::pair<bRect, bRectTransform> pair;
@@ -73,31 +75,34 @@ XmlImageLoader::loadPicture(labeledImage *img){
             xml.readNextStartElement();
             if (xml.name() != "bounding_rect") return nullptr;
             xml.readNextStartElement(); // <x>
-            bRec.x = std::stoi(xml.readElementText);
+            bRec.x = xml.readElementText().toInt();
             xml.readNextStartElement(); // <y>
-            bRec.y = std::stoi(xml.readElementText);
+            bRec.y = xml.readElementText().toInt();
             xml.readNextStartElement(); // <w>
-            bRec.w = std::stoi(xml.readElementText);
+            bRec.w = xml.readElementText().toInt();
             xml.readNextStartElement(); // <h>
-            bRec.h = std::stoi(xml.readElementText);
+            bRec.h = xml.readElementText().toInt();
 
             xml.readNextStartElement();
             if (xml.name() != "shear_rect") return nullptr;
             xml.readNextStartElement(); // <dx>
-            bTrans.x = std::stoi(xml.readElementText);
+            bTrans.x = xml.readElementText().toInt();
             xml.readNextStartElement(); // <dy>
-            bTrans.y = std::stoi(xml.readElementText);
+            bTrans.y = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m11>
-            bTrans.w = std::stoi(xml.readElementText);
+            bTrans.w = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m12>
-            bTrans.h = std::stoi(xml.readElementText);
+            bTrans.h = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m21>
-            bTrans.w = std::stoi(xml.readElementText);
+            bTrans.w = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m22>
-            bTrans.h = std::stoi(xml.readElementText);
+            bTrans.h = xml.readElementText().toInt();
 
             pair = std::make_pair(bRec, bTrans);
-            list.append(pair);
+            img->bBoxes->append(pair);
         }
+
     }
+    currentImgNo++;
+    return img;
 }
