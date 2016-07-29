@@ -29,3 +29,9 @@ HEADERS  += window_main.h \
 FORMS    += window_main.ui
 
 INCLUDEPATH += $$PWD/Eigen/
+
+DISTFILES += \
+    picture_batch.xsd
+
+RESOURCES = application.qrc \
+    application.qrc

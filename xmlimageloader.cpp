@@ -3,29 +3,36 @@
 #include <memory>
 
 #include <QUrl>
+#include <QXmlSchemaValidator>
 
 #include "xmlimageloader.h"
 #include "labeledimage.h"
 #include "imagedownloader.h"
 
-XmlImageLoader::XmlImageLoader(QIODevice *xmlFile)
+XmlImageLoader::XmlImageLoader(QIODevice *xmlFile, QUrl uri)
 {
     xml = QXmlStreamReader(xmlFile);
     imgDownloader = ImageDownloader();
     xml.setDevice(xmlFile);
 
-    // This variable is increased by 1 every time we read a labeledImage
-    currentImgNo = -1;
-
-    if (xml.readNextStartElement()) {
-        if (xml.name() == "picture_batch") {
-            // We're good to go!
+    QUrl schemaUrl(":/picture_batch.xsd");
+    QXmlSchema schema;
+    schema.load(schemaUrl);
+    if (schema.isValid()) {
+        QXmlSchemaValidator validator(schema);
+        if (validator.validate(xmlFile, uri)) {
+            qDebug() << "Loaded xml" << uri.fileName() << "is valid";
+            // This variable is increased by 1 ever time we read a labeledImage
+            currentImgNo = -1;
+            do xml.readNextStartElement();
+            while (xml.name() != "picture_batch");
+        } else {
+            xml.raiseError(QObject::tr("The file is not a valid picture_batch file"));
+            return !xml.error();
         }
-        else
-            xml.raiseError(QObject::tr("The file is not a picture_batch file"));
+    } else {
+        qDebug() << "invalid schema file, please fix!";
     }
-    return !xml.error();
-
 }
 
 LabeledImage *XmlImageLoader::next() {
@@ -84,7 +91,7 @@ LabeledImage* XmlImageLoader::loadPicture(){
             bRec.h = xml.readElementText().toInt();
 
             xml.readNextStartElement();
-            if (xml.name() != "shear_rect") return nullptr;
+            if (xml.name() != "brect_transform") return nullptr;
             xml.readNextStartElement(); // <m11>
             bTrans.m11 = xml.readElementText().toInt();
             xml.readNextStartElement(); // <m12>

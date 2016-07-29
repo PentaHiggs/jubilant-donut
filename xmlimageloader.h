@@ -15,7 +15,7 @@
 class XmlImageLoader
 {
 public:
-    XmlImageLoader(QIODevice *device);
+    XmlImageLoader(QIODevice *device, QUrl uri);
     QString errorString() const;
     LabeledImage *next();
 private:

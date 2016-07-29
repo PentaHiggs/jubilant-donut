@@ -43,7 +43,7 @@ void window_main::on_pushButton_clicked()
     }
 
     // Pass file to XML reader so it can get down to business
-    xmlImageLoader = new XmlImageLoader(xmlFile);
+    xmlImageLoader = new XmlImageLoader(xmlFile, QUrl::fromLocalFile(filename));
 
     ui->pushButtonStartLabelling->setEnabled(true);
 }
