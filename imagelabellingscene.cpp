@@ -2,8 +2,6 @@
 
 ImageLabellingScene::ImageLabellingScene() :
     labellingState(0),
-    line1(nullptr),
-    line2(nullptr)
 {
     QGraphicsScene::QGraphicsScene();
 
@@ -17,8 +15,6 @@ ImageLabellingScene::ImageLabellingScene(LabeledImage labeledImage) :
 }
 
 ImageLabellingScene::~ImageLabellingScene() {
-    delete line1;
-    delete line2;
     QGraphicsScene::~QGraphicsScene();
 }
 
@@ -26,27 +22,53 @@ void ImageLabellingScene::mouseEnterImage(QPointF point)
 {
     if(labellingState==0 || labellingState==1) {
         // Make a horizontal line going through point
-        line1 = new QGraphicsLineItem(QLineF(point, point+QPointF(1,0)));
-
-        // Make a verticla line going through point
-        line2 = new QGraphicsLineItem(QLineF(point, point+QPointF(0,1)));
+        gTempItems["horizontalLine"] = new QGraphicsLineItem(QLineF(point, point+QPointF(1,0)));
+        // Make a vertical line going through point
+        gTempItems["verticalLine"] = new QGraphicsLineItem(QLineF(point, point+QPointF(0,1)));
     } else if (labellingState >= 2 && labellingState <= 5){
-        // We have a skew dot following the cursor instead now!
+        // We have a small circle following the cursor instead now
+        gTempItems["circle"] = new QGraphicsEllipseItem(point.x(), point.y(), .1, .1, this);
     }
 }
 
 void ImageLabellingScene::mouseMoveOnImage(QPointF point)
 {
-    // we setLine here
+    if(labellingState <= 1 && gTempItems.contains("horizontalLine")
+            && gTempItems.contains("verticalLine")) {
+        gTempItems["horizontalLine"]->setLine(QLineF(point, point+QPointF(1,0)));
+        gTempItems["verticalLine"]->setLine(QLineF(point, point+QPointF(0,1)));
+    } else if (labellingState >= 2 && labellingState <= 5
+               && gTempItems.contains("circle")){
+        // Update position of the dot following the cursor
+        gTempItems["circle"]->setRect(point.x(), point.y(), .1, .1);
+    }
+
 }
 
 void ImageLabellingScene::mouseLeaveImage()
 {
-
+    QMap<QString, *QGraphicsItem>::const_iterator i = gTempItems.constBegin();
+    while (i != gTempItems.constEnd()) delete i.value();
 }
 
 void ImageLabellingScene::mouseClickImage(QPointF point)
 {
+    QMap<QString, *QGraphicsItem>::const_iterator i = gTempItems.constBegin();
+    while (i != gTempItems.constEnd()) delete i.value();
+
+    if (labellingState == 0) {
+        gPermItems["horizontalLine"] = new QGraphicsLineItem(QLineF(point, point+QPointF(0,1)));
+        gPermItems["verticalLine"] = new QGraphicsLineItem(QLineF(point, point+QPointF(1,0)));
+    } else if (labellingState == 1) {
+        /* we draw our rectangle using
+        QPointF A = gPermItems["horizontalLine"]->line()->p1();
+        // we draw rectangle with corners A and point
+        */
+        delete gPermItems.value("horizontalLine");
+        delete gPermItems.value("verticalLine");
+        gPermItems.remove("horizontalLine");
+        gPermItems.remove("verticalLine");
+    }
 
 }
 

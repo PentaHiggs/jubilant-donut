@@ -50,7 +50,7 @@ public:
     ~LabeledImage();
     QString label;
     QVector< std::pair<bRect, bRectTransform> > *bBoxes;
-    void setRectTransform(QPoint A, QPoint B, QPoint C, QPoint D);
+
     int width;
     int height;
 signals:
@@ -66,6 +66,8 @@ protected:
 
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
+private:
+    bRectTransform findRectTransform(QPoint A, QPoint B, QPoint C, QPoint D);
 }
 
 #endif // LABELEDIMAGE_H

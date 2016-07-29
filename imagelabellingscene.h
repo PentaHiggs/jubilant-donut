@@ -3,11 +3,12 @@
 
 #include <QGraphicsScene>
 #include <QPoint>
+#include <QMap>
 #include "labeledimage.h"
 
 class ImageLabellingScene : public QGraphicsScene
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     ImageLabellingScene();
     ImageLabellingScene(LabeledImage labeledImage);
@@ -26,9 +27,9 @@ private:
     LabeledImage currentLabeledImage;
     void solidifyLines();
     int labellingState;
-    QGraphicsLineItem *line1;
-    QGraphicsLineItem *line2;
 
+    QMap<QString, *QGraphicsItem> gTempItems;
+    QMap<QString, *QGraphicsItem> gPermItems;
 };
 
 #endif // IMAGELABELLINGSCENE_H

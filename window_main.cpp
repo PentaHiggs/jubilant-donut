@@ -55,8 +55,18 @@ void window_main::on_pushButtonStartLabelling_clicked()
     if(labeledImage != nullptr) {
         // loading succeeded.  First lets create a scene, and place image in scene.
         ImageLabellingScene scene;
-        ui->graphicsView->setScene(scene);
+        ui->graphicsView->setScene(&scene);
         ui->graphicsView->fitInView(*labeledImage, Qt::KeepAspectRatio);
+
+        // Now we need to hook up the ImageLabellingScene's slots to the LabeledImage signals
+        QObject::connect(image, SIGNAL(mouseEnterImage(QPointF)), scene, SLOT(mouseEnterImage(QPointF)));
+        QObject::connect(image, SIGNAL(mouseMoveOnImage(QPointF)), scene, SLOT(mouseMoveOnImage(QPointF)));
+        QObject::connect(image, SIGNAL(mouseLeaveImage()), scene, SLOT(mouseLeaveImage()));
+        QObject::connect(image, SIGNAL(mouseClickImage(QPointF)), scene, SLOT(mouseClickImage()));
+
+        // Hook up the navigation buttons as well
+        QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));
+        QObject::connect(ui->pushButtonPreviousStep, SIGNAL(clicked(bool)), scene, SLOT(back()));
 
 
     } else {
