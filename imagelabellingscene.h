@@ -4,6 +4,8 @@
 #include <QGraphicsScene>
 #include <QPoint>
 #include <QMap>
+#include <QVector>
+
 #include "labeledimage.h"
 
 class ImageLabellingScene : public QGraphicsScene
@@ -25,11 +27,12 @@ signals:
     void skewDone();
 private:
     LabeledImage currentLabeledImage;
-    void solidifyLines();
+
     int labellingState;
 
+    QMap<QString, *QGraphicsItem> gMouseoverItems;
     QMap<QString, *QGraphicsItem> gTempItems;
-    QMap<QString, *QGraphicsItem> gPermItems;
+    QVector<*QGraphicsItem> gPermItems;
 };
 
 #endif // IMAGELABELLINGSCENE_H
