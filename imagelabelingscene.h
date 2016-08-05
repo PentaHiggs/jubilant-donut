@@ -14,6 +14,7 @@ class ImageLabelingScene : public QGraphicsScene
 public:
     ImageLabelingScene();
     ImageLabelingScene(LabeledImage labeledImage);
+    void changeImage(LabeledImage &labeledImage);
     ~ImageLabelingScene();
 
 public slots:
@@ -23,13 +24,14 @@ public slots:
     void mouseClickImage(QPointF point);
     void forward();
     void back();
+    void save();
 signals:
     void skewDone();
 private:
     LabeledImage currentLabeledImage;
 
     int labelingState;
-    int const totalStates;
+    int const totalStates = 6;
 
     QPointF tempSavedPoints[4];
 

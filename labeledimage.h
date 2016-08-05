@@ -67,7 +67,7 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    bRectTransform findRectTransform(QPoint A, QPoint B, QPoint C, QPoint D);
+    bRectTransform findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D);
 }
 
 #endif // LABELEDIMAGE_H

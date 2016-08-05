@@ -3,7 +3,7 @@
 #include <string>
 #include <QGraphicsPathItem>
 #include <QGraphicsEllipseItem>
-
+#include <QMessageBox>
 
 QPainterPath createPath(QPoint points[], int size);
 
@@ -12,6 +12,10 @@ ImageLabelingScene::ImageLabelingScene() :
     tempSavePoints{QPointF(), QPointF(), QPointF(), QPointF()}
 {
     QGraphicsScene::QGraphicsScene();
+    currentBox.x = -1;
+    currentBox.y = -1;
+    currentBox.h = -1;
+    currentBox.w = -1;
 }
 
 ImageLabelingScene::ImageLabelingScene(LabeledImage labeledImage) :
@@ -93,7 +97,9 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         QPen pen = new QPen();
         pen.setColor(Qt::magenta);
         item->setPen(pen);
+
         gPermItems.append(item);
+        this->addItem(item);
 
         deleteItem(gTempItems, "horizontalLine");
         deleteItem(gTempItems, "verticalLine");
@@ -105,12 +111,13 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         currentBox.h = h;
         currentBox.w = w;
 
-        // labellingState++;
+        labelingState++;
         break;
     case 2:
         QGraphicsEllipseItem circle1 = modifyOrNew<QGraphicsEllipseItem>(gTempItems, "circle1");
         circle1->setRect(QRectF(QPointF(point.x()-.05, point.y()-.05),.1, .1));
         tempSavePoints[0] = point;
+        labelingState++;
         break;
     case 3:
         tempSavePoints[1] = point;
@@ -120,6 +127,7 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 2));
         path->setPen(QPen(Qt::SolidLine));
+        labelingState++;
         break;
     case 4:
         tempSavePoints[2] = point;
@@ -129,6 +137,7 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 3));
         path->setPen(QPen(Qt::SolidLine));
+        labelingState++;
         break;
     case 5:
         tempSavePoints[3] = point;
@@ -141,37 +150,180 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
 
         QGraphicsPolygonItem *poly = new QGraphicsPolygonItem(path->toFillPolygon());
         gPermItems.append(poly);
+        this->addItem(poly);
 
         deleteItem(gTempItems, "path");
+        // Save must be clicked at this point to save current polygon
         break;
     }
 }
 
 void ImageLabelingScene::forward()
 {
-    switch(labellingState % totalStates)
+    switch(labelingState % totalStates)
     {
     case 0:
+        break;
     case 1:
+        break;
     case 2:
+        if (!tempSavePoints[0].isNull()){
+            mouseClickImage(tempSavePoints[0]);
+            labelingState++;
+        }
+        break;
     case 3:
+        if (!tempSavePoints[1].isNull()){
+            mouseClickImage(tempSavePoints[1]);
+            labelingState++;
+        }
+        break;
     case 4:
+        if (!tempSavePoints[2].isNull()){
+            mouseClickImage(tempSavePoints[2]);
+        }
+        break;
     case 5:
+        if (!tempSavePoints[3].isNull()){
+            mouseClickImage(tempSavePoints[2]);
+        }
         break;
     }
+}
 
+void ImageLabelingScene::save()
+{
+    if (labelingState % totalStates) {
+        saveCurrent();
+
+        for(auto item : gMouseoverItems) deleteItem(gMouseoverItems, item);
+        for(auto item : gTempItems) deleteItem(gTempItems, item);
+        tempSavePoints[0] = QPointF();
+        tempSavePoints[1] = QPointF();
+        tempSavePoints[2] = QPointF();
+        tempSavePoints[3] = QPointF();
+
+        currentBox.x = -1;
+        currentBox.y = -1;
+        currentBox.h = -1;
+        currentBox.w = -1;
+        labelingState ++;
+    }
 }
 
 void ImageLabelingScene::back()
 {
-    // Left unimplemented for now
     case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
+        // Going back here shouldn't do anything unless it's the one that goes from image to image
         break;
+    case 1:
+        deleteItem(gTempItems, "horizontalLine");
+        deleteItem(gTempItems, "verticalLine");
+        labelingState--;
+        break;
+    case 2:
+        QGraphicsRectItem item = dynamic_cast<QGraphicsRectItem>(gPermItems.last());
+        QPointF point = item.rect().topLeft(); // Deletes the last element of gPermItems
+
+        currentBox.x = -1;
+        currentBox.y = -1;
+        currentBox.h = -1;
+        currentBox.w = -1;
+
+        modifyOrNew<QGraphicsLineItem>(gTempItems, "horizontalLine")->
+                setLine(QLineF(point, point+QPointF(1,0)));
+        modifyOrNew<QGraphicsLineItem>(gTempItems, "verticalLine")->
+                setLine(QLineF(point, point+QPointF(0,1)));
+
+        this->removeItem(item);
+        gPermItems.erase(gPermItems.end() - 1);
+        labelingState--;
+        break;
+    case 3:
+        deleteItem(gTempItems, "circle1");
+        tempSavePoints[0] = QPointF();
+        labelingState--;
+        break;
+    case 4:
+        deleteItem(gTempItems, "circle2");
+        deleteItem(gTempItems, "path");
+        tempSavePoints[1] = QPointF();
+        labelingState--;
+    case 5:
+        if (tempSavePoints[3].isNull()) {
+            // case 5: in mouseClickImage has not yet run
+            tempSavePoints[3] = QPointF();
+            deleteItem(gTempItems, "circle3");
+            deleteItem(gTempItems, "path");
+            QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
+            path->setPath(createPath(tempSavedPoints, 2));
+            path->setPen(Qt::SolidLine);
+            labelingState--;
+        } else { // tempSavePoints[3].isNull()==false
+            tempSavePoints[4] = QPointF();
+            deleteItem(gTempItems, "circle4");
+            QGraphicsItem *item = gPermItems.last();
+            this->removeItem(item);
+            gPermItems.erase(gPermItems.end() - 1);
+
+            QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
+            path->setPath(createPath(tempSavedPoints, 3));
+
+            // we don't decrement labelingState, we just return everything to pre-case5: in mouseClickImage state
+        }
+        break;
+}
+
+void ImageLabelingScene::saveCurrent(){
+    if (labelingState % totalStates == 5) {
+        auto pair = std::pair<bRect, bRectTransform>(
+                    currentBox,
+                    currentLabeledImage.findRectTransform(
+                        currentBox,
+                        tempSavePoints[0],
+                        tempSavePoints[1],
+                        tempSavePoints[2],
+                        tempSavePoints[3]
+                        )
+                    );
+        currentLabeledImage.bBoxes->operator[](labelingState/totalStates) = pair;
+    }
+}
+
+void ImageLabelingScene::changeImage(LabeledImage &labeledImage)
+{
+    QMessageBox msgBox;
+    msgBox.setText("Are you certain you want to load a new image?  Have all bounding boxes been labeled?  Any unsaved work will be lost.");
+    msg.setStandardbuttons(QMessageBox::Yes || QMessageBox::No);
+    msg.setDefaultButton(QMessageBox::Yes);
+    int ret = msgBox.exec();
+    switch (ret) {
+    case QMessageBox::Yes:
+        for(auto item : gMouseoverItems) deleteItem(gMouseoverItems, item);
+        for(auto item : gTempItems) deleteItem(gTempItems, item);
+
+        for(auto item : gPermItems) this->removeItem(item);
+        gPermItems.removeAll();
+
+        tempSavePoints[0] = QPointF();
+        tempSavePoints[1] = QPointF();
+        tempSavePoints[2] = QPointF();
+        tempSavePoints[3] = QPointF();
+
+        currentBox.x = -1;
+        currentBox.y = -1;
+        currentBox.h = -1;
+        currentBox.w = -1;
+
+        labelingState = 0;
+        currentLabeledImage = labeledImage;
+        break;
+    case QMessageBox::No:
+        return;
+    default:
+        return;
+    }
+
 }
 
 template<typename T>
