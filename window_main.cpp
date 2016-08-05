@@ -1,7 +1,7 @@
 #include "window_main.h"
 #include "ui_window_main.h"
 #include "labeledimage.h"
-#include "imagelabellingscene.h"
+#include "imagelabelingscene.h"
 
 #include <QFileDialog>
 #include <QGraphicsPixmapItem>
@@ -54,7 +54,7 @@ void window_main::on_pushButtonStartLabelling_clicked()
     std::shared_ptr<LabeledImage> labeledImage = xmlImageLoader.next();
     if(labeledImage != nullptr) {
         // loading succeeded.  First lets create a scene, and place image in scene.
-        ImageLabellingScene scene;
+        ImageLabelingScene scene;
         ui->graphicsView->setScene(&scene);
         ui->graphicsView->fitInView(*labeledImage, Qt::KeepAspectRatio);
 
