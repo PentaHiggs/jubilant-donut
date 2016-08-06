@@ -11,9 +11,10 @@
 class ImageLabelingScene : public QGraphicsScene
 {
     Q_OBJECT
+
 public:
     ImageLabelingScene();
-    ImageLabelingScene(LabeledImage labeledImage);
+    ImageLabelingScene(LabeledImage &labeledImage);
     void changeImage(LabeledImage &labeledImage);
     ~ImageLabelingScene();
 
@@ -28,16 +29,16 @@ public slots:
 signals:
     void skewDone();
 private:
-    LabeledImage currentLabeledImage;
+    LabeledImage *currentLabeledImage;
 
     int labelingState;
     int const totalStates = 6;
 
     QPointF tempSavedPoints[4];
 
-    QMap<QString, *QGraphicsItem> gMouseoverItems;
-    QMap<QString, *QGraphicsItem> gTempItems;
-    QVector<*QGraphicsItem> gPermItems;
+    QMap<QString, QGraphicsItem*> gMouseoverItems;
+    QMap<QString, QGraphicsItem*> gTempItems;
+    QVector<QGraphicsItem*> gPermItems;
 
     bRect currentBox;
     void saveCurrent();

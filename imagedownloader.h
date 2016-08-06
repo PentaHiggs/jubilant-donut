@@ -10,10 +10,10 @@ class ImageDownloader
 {
 public:
     ImageDownloader(QObject *parent = 0);
-   ~ImageDownloader();
+    ~ImageDownloader();
     QPixmap download(QUrl url);
 private:
-    QNetworkAccessManager nManager;
+    QNetworkAccessManager *nManager;
 };
 
 #endif // IMAGEDOWNLOADER_H

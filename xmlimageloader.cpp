@@ -4,6 +4,8 @@
 
 #include <QUrl>
 #include <QXmlSchemaValidator>
+#include <QXmlStreamReader>
+#include <QXmlSchema>
 
 #include "xmlimageloader.h"
 #include "labeledimage.h"
@@ -11,8 +13,7 @@
 
 XmlImageLoader::XmlImageLoader(QIODevice *xmlFile, QUrl uri)
 {
-    xml = QXmlStreamReader(xmlFile);
-    imgDownloader = ImageDownloader();
+    imgDownloader = new ImageDownloader();
     xml.setDevice(xmlFile);
 
     QUrl schemaUrl(":/picture_batch.xsd");
@@ -28,34 +29,30 @@ XmlImageLoader::XmlImageLoader(QIODevice *xmlFile, QUrl uri)
             while (xml.name() != "picture_batch");
         } else {
             xml.raiseError(QObject::tr("The file is not a valid picture_batch file"));
-            return !xml.error();
+            return;
         }
     } else {
         qDebug() << "invalid schema file, please fix!";
     }
 }
 
-LabeledImage *XmlImageLoader::next() {
-    // Find the next <picture> element.
-    while(xml.readNextStartElement() && !xml.name() == "picture")
-        xml.skipCurrentElement();
-    return loadPicture(img);
+XmlImageLoader::~XmlImageLoader(){
+    delete imgDownloader;
 }
 
-XmlImageLoader::errorString() const
-{
-    return QObject::tr("%1\nLine %2, column %3")
-            .arg(xml.errorString())
-            .arg(xml.lineNumber())
-            .arg(xml.columnNumber());
+LabeledImage *XmlImageLoader::next() {
+    // Find the next <picture> element.
+    while(xml.readNextStartElement() && !(xml.name() == "picture"))
+        xml.skipCurrentElement();
+    return loadPicture();
 }
 
 LabeledImage* XmlImageLoader::loadPicture(){
-    std::shared_ptr<LabeledImage> img = new LabeledImage();
+    LabeledImage *img =  new LabeledImage();
     xml.readNextStartElement();
     if (xml.name() == "label")
     {
-        label = xml.readElementText();
+        QString label = xml.readElementText();
         img->label = label;
     } else
         return nullptr;
@@ -63,9 +60,9 @@ LabeledImage* XmlImageLoader::loadPicture(){
     xml.readNextStartElement();
     if (xml.name() == "resource_url")
     {
-        resUrlText = xml.readElementText();
-        resUrl = QUrl(resUrlText);
-        QPixmap pixmap = imgDownloader.download(resUrlText);
+        QString resUrlText = xml.readElementText();
+        QUrl resUrl(resUrlText);
+        QPixmap pixmap = imgDownloader->download(resUrlText);
         img->setPixmap(pixmap);
     } else {
         return nullptr;

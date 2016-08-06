@@ -1,6 +1,5 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-<qresource>
-    <file> picture_batch.xsd </file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>picture_batch.xsd</file>
+    </qresource>
 </RCC>

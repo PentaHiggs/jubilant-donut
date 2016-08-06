@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include <memory>
+
 #include "xmlimageloader.h"
 
 namespace Ui {
@@ -23,8 +25,7 @@ private slots:
 
 private:
     Ui::window_main *ui;
-    std::shared_ptr<XmlImageLoader> xmlImageLoader;
-    void setUpGraphics(LabeledImage* img);
+    XmlImageLoader* xmlImageLoader;
 
 };
 

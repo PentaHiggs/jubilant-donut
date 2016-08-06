@@ -18,7 +18,7 @@ window_main::window_main(QWidget *parent) :
                 ui->fileNameDisplayTextEdit->textInteractionFlags() | Qt::TextSelectableByKeyboard);
 
     // Set widget stack to page_startPage and disable start button
-    ui->stackedWidget->setCurrentIndex();
+    ui->stackedWidget->setCurrentIndex(0);
     ui->pushButtonStartLabelling->setEnabled(false);
 }
 
@@ -36,8 +36,8 @@ void window_main::on_pushButton_clicked()
                 "XML files (*.xml);;Text files (*.txt);;All files (*.*)"
                 );
     ui->fileNameDisplayTextEdit->setText(filename);
-    QFile xmlFile = QFile(filename);
-    if (!file.open(QIODevice::ReadWrite)){
+    QFile *xmlFile = new QFile(filename);
+    if (!xmlFile->open(QIODevice::ReadWrite)){
         // Insert implementation of error dialog here
         return;
     }
@@ -51,18 +51,22 @@ void window_main::on_pushButton_clicked()
 void window_main::on_pushButtonStartLabelling_clicked()
 {
     // We should load stuff!
-    std::shared_ptr<LabeledImage> labeledImage = xmlImageLoader.next();
+    LabeledImage *labeledImage = xmlImageLoader->next();
     if(labeledImage != nullptr) {
         // loading succeeded.  First lets create a scene, and place image in scene.
-        ImageLabelingScene scene;
-        ui->graphicsView->setScene(&scene);
-        ui->graphicsView->fitInView(*labeledImage, Qt::KeepAspectRatio);
+        ImageLabelingScene *scene = new ImageLabelingScene(*labeledImage);
+        ui->graphicsView->setScene(scene);
+        // ui->graphicsView->fitInView(*labeledImage, Qt::KeepAspectRatio);
 
         // Now we need to hook up the ImageLabellingScene's slots to the LabeledImage signals
-        QObject::connect(image, SIGNAL(mouseEnterImage(QPointF)), scene, SLOT(mouseEnterImage(QPointF)));
-        QObject::connect(image, SIGNAL(mouseMoveOnImage(QPointF)), scene, SLOT(mouseMoveOnImage(QPointF)));
-        QObject::connect(image, SIGNAL(mouseLeaveImage()), scene, SLOT(mouseLeaveImage()));
-        QObject::connect(image, SIGNAL(mouseClickImage(QPointF)), scene, SLOT(mouseClickImage()));
+        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseEnterImage(QPointF)),
+                         dynamic_cast<QObject*>(scene), SLOT(mouseEnterImage(QPointF)));
+        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseMoveOnImage(QPointF)),
+                         dynamic_cast<QObject*>(scene), SLOT(mouseMoveOnImage(QPointF)));
+        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseLeaveImage()),
+                         dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
+        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
+                         dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
 
         // Hook up the navigation buttons as well
         QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));

@@ -2,39 +2,37 @@
 
 
 
-LabeledImage::LabeledImage()
+LabeledImage::LabeledImage() : QGraphicsPixmapItem()
 {
-    QGraphicsPixmapItem::QGraphicsPixmapItem();
-    this->setAttribute(Qt::WA_Hover, true);
     setAcceptHoverEvents(true);
 }
 
 LabeledImage::~LabeledImage() {
     delete bBoxes;
-    QGraphicsPixmapItem::~QGraphicsPixmapItem();
 }
 
-virtual void LabeledImage::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
+void LabeledImage::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     emit mouseEnterImage(event->scenePos());
     QGraphicsPixmapItem::hoverEnterEvent(event);
 }
 
-virtual void LabeledImage::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
+void LabeledImage::hoverMoveEvent(QGraphicsSceneHoverEvent *event){
     emit mouseMoveOnImage(event->scenePos());
     QGraphicsPixmapItem::hoverMoveEvent(event);
 }
 
-virtual void LabeledImage::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
+void LabeledImage::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     emit mouseLeaveImage();
     QGraphicsPixmapItem::hoverLeaveEvent(event);
 }
 
-virtual void LabeledImage::mouseReleaseEvent(QGraphicsSceneHoverEvent *event){
+void LabeledImage::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
     emit mouseClickImage(event->scenePos());
     QGraphicsPixmapItem::mouseReleaseEvent(event);
 }
 
 bRectTransform LabeledImage::findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D){
+    /*(
     Eigen::Matrix<float, 8, 8> k;
     k <<    R.x,    R.y,    1,      0,      0,      0,      (-1)*R.x*A.x(),         (-1)*R.y*A.x(),
             0,      0,      0,      R.x,    R.y,    1,      (-1)*R.x*A.y(),         (-1)*R.y*A.y(),
@@ -64,5 +62,6 @@ bRectTransform LabeledImage::findRectTransform(bRect R, QPoint A, QPoint B, QPoi
     B.m31 = M(6,0);
     B.m32 = M(7,0);
     B.m33 = 1.;
-    return B;
+    */
+    return bRectTransform();
 }

@@ -55,7 +55,7 @@
        <x>0</x>
        <y>20</y>
        <width>331</width>
-       <height>61</height>
+       <height>104</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -229,7 +229,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_startPage">
       <widget class="QPushButton" name="pushButtonStartLabelling">

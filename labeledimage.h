@@ -6,8 +6,8 @@
 #include <QVector>
 #include <QUrl>
 #include <QGraphicsPixmapItem>
-#include <QGraphicSceneHoverEvent>
-#include <Eigen/LU>
+#include <QGraphicsSceneHoverEvent>
+//#include <Eigen/LU>
 
 typedef struct
 {
@@ -41,13 +41,16 @@ typedef struct
     float m33;
 } bRectTransform;
 
-class LabeledImage : public QGraphicsPixmapItem
+class LabeledImage : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 
 public:
     LabeledImage();
     ~LabeledImage();
+
+    bRectTransform findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D);
+
     QString label;
     QVector< std::pair<bRect, bRectTransform> > *bBoxes;
 
@@ -65,9 +68,6 @@ protected:
     virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-private:
-    bRectTransform findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D);
-}
+};
 
 #endif // LABELEDIMAGE_H

@@ -4,7 +4,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-ImageDownloader::ImageDownloader(QObject *parent = 0)
+ImageDownloader::ImageDownloader(QObject *parent)
 {
    nManager = new QNetworkAccessManager(parent);
 }
@@ -13,30 +13,28 @@ ImageDownloader::~ImageDownloader() {
    delete nManager;
 }
 
-ImageDownloader::download(QUrl imageUrl) {
+QPixmap ImageDownloader::download(QUrl imageUrl) {
     QTimer timer;
     QEventLoop loop;
 
-    t.setSingleShot(true);
+    timer.setSingleShot(true);
 
-    connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
-    connect(&nManager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+    QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    QObject::connect(nManager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
 
     QNetworkRequest request(imageUrl);
-    QNetworkReply *reply = nManager.get(request);
+    QNetworkReply *reply = nManager->get(request);
 
     timer.start(10000); // 20 second timeout
     loop.exec();
 
-    QPixmap img = QPixmap(parent);
-    if (t.isActive()){
+    QPixmap img = QPixmap();
+    if (timer.isActive()){
         // success!
-        data = reply->readAll();
-        QPixmap img = QPixmap(parent);
+        QByteArray data = reply->readAll();
         img.loadFromData(data);
-        return img;
     } else {
         // failure : <
-        return img;
     }
+    return img;
 }

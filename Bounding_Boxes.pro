@@ -3,10 +3,10 @@
 # Project created by QtCreator 2016-07-20T01:52:49
 #
 #-------------------------------------------------
-
+QT       += core
 QT       += core gui
 QT       += network
-
+QT       += xmlpatterns
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Bounding_Boxes
@@ -28,7 +28,7 @@ HEADERS  += window_main.h \
 
 FORMS    += window_main.ui
 
-INCLUDEPATH += $$PWD/Eigen/
+#INCLUDEPATH += $$PWD/Eigen/
 
 DISTFILES += \
     picture_batch.xsd

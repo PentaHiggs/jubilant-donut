@@ -1,7 +1,7 @@
 #ifndef XMLIMAGELOADER_H
 #define XMLIMAGELOADER_H
 
-#include <pair>
+#include <utility>
 
 #include <QUrl>
 #include <QString>
@@ -16,12 +16,13 @@ class XmlImageLoader
 {
 public:
     XmlImageLoader(QIODevice *device, QUrl uri);
+    ~XmlImageLoader();
     QString errorString() const;
     LabeledImage *next();
 private:
     int currentImgNo;
     QXmlStreamReader xml;
-    ImageDownloader imgDownloader;
+    ImageDownloader *imgDownloader;
     LabeledImage *loadPicture();
     loadBoundingBoxes(LabeledImage *img);
 };
