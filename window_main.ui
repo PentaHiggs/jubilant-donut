@@ -55,7 +55,7 @@
        <x>0</x>
        <y>20</y>
        <width>331</width>
-       <height>104</height>
+       <height>61</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -63,12 +63,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QTextEdit" name="fileNameDisplayTextEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>71</height>
-           </size>
-          </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -229,7 +223,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="page_startPage">
       <widget class="QPushButton" name="pushButtonStartLabelling">
@@ -245,6 +239,8 @@
         <string>Start Labelling</string>
        </property>
       </widget>
+      <zorder>pushButtonStartLabelling</zorder>
+      <zorder></zorder>
      </widget>
      <widget class="QWidget" name="page_instructionsPage">
       <widget class="QPushButton" name="pushButtonPreviousStep">

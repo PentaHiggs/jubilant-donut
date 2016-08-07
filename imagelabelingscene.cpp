@@ -87,6 +87,7 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         // Must ensure that these items are not modified later by future calls to modifyOrNew(gMouseoverItems,"")
         gMouseoverItems.remove("horizontalLine");
         gMouseoverItems.remove("verticalLine");
+        emit newInstruction("Select bottom-right side of the bounding rectangle","");
         labelingState++;
         break; }
     case 1: {
@@ -109,13 +110,16 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         currentBox.y = y;
         currentBox.h = h;
         currentBox.w = w;
-
+        emit newInstruction("Select top-left corner of bounding quadrilateral inside current bounding rectangle.",
+                            QString("Rectangle %1 labeled ").arg(labelingState/totalStates + 1));
         labelingState++;
         break; }
     case 2: {
         QGraphicsEllipseItem *circle1 = modifyOrNew<QGraphicsEllipseItem>(gTempItems, "circle1");
         circle1->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
         tempSavedPoints[0] = point;
+        emit newInstruction("Select top-right corner of bounding quadrilateral inside current bounding rectangle \
+                                (proceed clockwise)","");
         labelingState++;
         break; }
     case 3: {
@@ -126,6 +130,8 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 2));
         path->setPen(QPen(Qt::SolidLine));
+        emit newInstruction("Select next corner of bounding quadrilateral inside current bounding rectangle \
+                                (proceed clockwise)","");
         labelingState++;
         break; }
     case 4: {
@@ -136,6 +142,8 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 3));
         path->setPen(QPen(Qt::SolidLine));
+        emit newInstruction("Select last corner of bounding quadrilateral inside current bounding rectangle \
+                                (proceed clockwise)", "");
         labelingState++;
         break; }
     case 5: {
@@ -147,12 +155,9 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         path->setPath(createPath(tempSavedPoints, 4));
         path->path().closeSubpath();
 
-        QGraphicsPolygonItem *poly = new QGraphicsPolygonItem(path->path().toFillPolygon());
-        gPermItems.append(poly);
-        this->addItem(poly);
-
-        deleteItem(gTempItems, "path");
         // Save must be clicked at this point to save current polygon
+        emit newInstruction("Press save in order to save the current bounding quadrilateral; \
+                                You can instead click on the screen to re-set the last point", "");
         break; }
     }
 }
@@ -168,13 +173,11 @@ void ImageLabelingScene::forward()
     case 2:
         if (!tempSavedPoints[0].isNull()){
             mouseClickImage(tempSavedPoints[0]);
-            labelingState++;
         }
         break;
     case 3:
         if (!tempSavedPoints[1].isNull()){
             mouseClickImage(tempSavedPoints[1]);
-            labelingState++;
         }
         break;
     case 4:
@@ -184,7 +187,7 @@ void ImageLabelingScene::forward()
         break;
     case 5:
         if (!tempSavedPoints[3].isNull()){
-            mouseClickImage(tempSavedPoints[2]);
+            mouseClickImage(tempSavedPoints[3]);
         }
         break;
     }
@@ -195,6 +198,12 @@ void ImageLabelingScene::save()
     if (labelingState % totalStates) {
         saveCurrent();
 
+        QGraphicsPathItem *path = dynamic_cast<QGraphicsPathItem*>(gTempItems["path"]);
+        QGraphicsPolygonItem *poly = new QGraphicsPolygonItem(path->path().toFillPolygon());
+        gPermItems.append(poly);
+        this->addItem(poly);
+
+        deleteItem(gTempItems, "path");
         for(auto item : gMouseoverItems.keys()) deleteItem(gMouseoverItems, item);
         for(auto item : gTempItems.keys()) deleteItem(gTempItems, item);
         tempSavedPoints[0] = QPointF();
@@ -206,7 +215,11 @@ void ImageLabelingScene::save()
         currentBox.y = -1;
         currentBox.h = -1;
         currentBox.w = -1;
+
+        emit newInstruction("Select top-left side of the bounding rectangle around an object in the image",
+                            QString("Labeled object number %1").arg(labelingState/totalStates + 1));
         labelingState ++;
+
     }
 }
 
@@ -220,7 +233,9 @@ void ImageLabelingScene::back()
     case 1:
         deleteItem(gTempItems, "horizontalLine");
         deleteItem(gTempItems, "verticalLine");
+
         labelingState--;
+        emit newInstruction("Select top-left side of the bounding rectangle around an object in the image","",true);
         break;
     case 2: {
         QGraphicsRectItem *item = dynamic_cast<QGraphicsRectItem*>(gPermItems.last());
@@ -239,34 +254,36 @@ void ImageLabelingScene::back()
         this->removeItem(item);
         gPermItems.erase(gPermItems.end() - 1);
         labelingState--;
+        emit newInstruction("Select bottom-right side of the bounding rectangle","",true);
         break; }
     case 3:
         deleteItem(gTempItems, "circle1");
         tempSavedPoints[0] = QPointF();
         labelingState--;
+        emit newInstruction("Select top-left corner of bounding quadrilateral inside current bounding rectangle.","",true);
         break;
     case 4:
         deleteItem(gTempItems, "circle2");
         deleteItem(gTempItems, "path");
         tempSavedPoints[1] = QPointF();
         labelingState--;
+        emit newInstruction("Select top-right corner of bounding quadrilateral inside current bounding rectangle \
+                                (proceed clockwise)","", true);
         break;
     case 5: {
         if (tempSavedPoints[3].isNull()) {
             // case 5: in mouseClickImage has not yet run
-            tempSavedPoints[3] = QPointF();
             deleteItem(gTempItems, "circle3");
             deleteItem(gTempItems, "path");
             QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
             path->setPath(createPath(tempSavedPoints, 2));
             path->setPen(Qt::SolidLine);
             labelingState--;
+            emit newInstruction("Select last corner of bounding quadrilateral inside current bounding rectangle \
+                                    (proceed clockwise)", "", true);
         } else { // tempSavedPoints[3].isNull()==false
-            tempSavedPoints[4] = QPointF();
+            tempSavedPoints[3] = QPointF();
             deleteItem(gTempItems, "circle4");
-            QGraphicsItem *item = gPermItems.last();
-            this->removeItem(item);
-            gPermItems.erase(gPermItems.end() - 1);
 
             QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
             path->setPath(createPath(tempSavedPoints, 3));

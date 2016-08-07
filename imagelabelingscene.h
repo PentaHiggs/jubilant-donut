@@ -28,6 +28,7 @@ public slots:
     void save();
 signals:
     void skewDone();
+    void newInstruction(QString longStr, QString shortStr, bool isBack=false);
 private:
     LabeledImage *currentLabeledImage;
 
