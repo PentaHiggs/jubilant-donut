@@ -48,6 +48,24 @@ void window_main::on_pushButton_clicked()
     ui->pushButtonStartLabelling->setEnabled(true);
 }
 
+void window_main::onNewInstruction(QString longStr, QString shortStr, bool back) {
+    ui->textBrowserInstruction->setText(longStr);
+    if (!shortStr.isEmpty())
+    {
+        if (!back) {
+            ui->textBrowserInstructionsCompleted->insertPlainText(shortStr);
+            ui->textBrowserInstructionsCompleted->insertPlainText("\n");
+        } else {
+            // how to delete a line...
+            QString txt = ui->textBrowserInstructionsCompleted->toPlainText()
+                    .section("/n", 0, -2, QString::SectionIncludeTrailingSep);
+            txt.append("shortStr");
+
+            ui->textBrowserInstructionsCompleted->setText(txt);
+        }
+    }
+}
+
 void window_main::on_pushButtonStartLabelling_clicked()
 {
     // We should load stuff!
@@ -67,6 +85,9 @@ void window_main::on_pushButtonStartLabelling_clicked()
                          dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
         QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
                          dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
+        QObject::connect(scene, SIGNAL(newInstruction(QString,QString,bool)),
+                         this, SLOT(onNewInstruction(QString,QString,bool)));
+
 
         // Hook up the navigation buttons as well
         QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));

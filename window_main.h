@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include <memory>
+#include <QString>
 
 #include "xmlimageloader.h"
 
@@ -22,6 +23,7 @@ public:
 private slots:
     void on_pushButton_clicked();
     void on_pushButtonStartLabelling_clicked();
+    void onNewInstruction(QString longStr, QString shortStr, bool back);
 
 private:
     Ui::window_main *ui;

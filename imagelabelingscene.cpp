@@ -16,6 +16,8 @@ ImageLabelingScene::ImageLabelingScene() :
     currentBox.y = -1;
     currentBox.h = -1;
     currentBox.w = -1;
+
+    emit newInstruction("Select top-left side of the bounding rectangle around an object in the image","");
 }
 
 ImageLabelingScene::ImageLabelingScene(LabeledImage &labeledImage) :
@@ -195,7 +197,7 @@ void ImageLabelingScene::forward()
 
 void ImageLabelingScene::save()
 {
-    if (labelingState % totalStates) {
+    if ((labelingState % totalStates) == 5) {
         saveCurrent();
 
         QGraphicsPathItem *path = dynamic_cast<QGraphicsPathItem*>(gTempItems["path"]);
