@@ -44,7 +44,8 @@ void window_main::on_pushButton_clicked()
 
     // Pass file to XML reader so it can get down to business
     xmlImageLoader = new XmlImageLoader(xmlFile, QUrl::fromLocalFile(filename));
-
+    QObject::connect(xmlImageLoader, SIGNAL(setImgNo(int,QString)),
+                     this, SLOT(onImgNoChange(int,QString)));
     ui->pushButtonStartLabelling->setEnabled(true);
 }
 
@@ -98,4 +99,9 @@ void window_main::on_pushButtonStartLabelling_clicked()
         // loading failed, spawn popup telling user.
     }
 
+}
+
+void window_main::onImgNoChange(int n, QString s) {
+    ui->textBoxImageNumber->setText(QString("%1").arg(n));
+    ui->textBoxImageLabel->setText(s);
 }

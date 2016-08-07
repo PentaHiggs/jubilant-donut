@@ -114,5 +114,6 @@ LabeledImage* XmlImageLoader::loadPicture(){
 
     }
     currentImgNo++;
+    emit setImgNo(currentImgNo, img->label);
     return img;
 }

@@ -8,17 +8,23 @@
 #include <QPixmap>
 #include <QVector>
 #include <QXmlStreamReader>
+#include <QObject>
 
 #include "labeledimage.h"
 #include "imagedownloader.h"
 
-class XmlImageLoader
+class XmlImageLoader : public QObject
 {
+    Q_OBJECT
+
 public:
     XmlImageLoader(QIODevice *device, QUrl uri);
-    ~XmlImageLoader();
+    XmlImageLoader();
+    virtual ~XmlImageLoader();
     QString errorString() const;
     LabeledImage *next();
+signals:
+    void setImgNo(int, QString);
 private:
     int currentImgNo;
     QXmlStreamReader xml;
