@@ -42,7 +42,6 @@ private:
     QVector<QGraphicsItem*> gPermItems;
 
     bRect currentBox;
-    void saveCurrent();
 
     template<typename T> T* modifyOrNew(QMap<QString, QGraphicsItem*> &, QString);
     void deleteItem(QMap<QString, QGraphicsItem*> &, QString);

@@ -49,45 +49,47 @@
     <property name="title">
      <string>XML File</string>
     </property>
-    <widget class="QWidget" name="verticalLayoutWidget">
+    <widget class="QTextEdit" name="fileNameDisplayTextEdit">
      <property name="geometry">
       <rect>
        <x>0</x>
        <y>20</y>
-       <width>331</width>
-       <height>61</height>
+       <width>261</width>
+       <height>31</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QTextEdit" name="fileNameDisplayTextEdit">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>71</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Open File</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QPushButton" name="loadImagesXmlPushButton">
-        <property name="text">
-         <string>Load Images XML</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>71</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>20</y>
+       <width>61</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Open File</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="loadImagesXmlPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>60</y>
+       <width>329</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load Images XML</string>
+     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_interImageNavigation">
@@ -239,8 +241,6 @@
         <string>Start Labelling</string>
        </property>
       </widget>
-      <zorder>pushButtonStartLabelling</zorder>
-      <zorder></zorder>
      </widget>
      <widget class="QWidget" name="page_instructionsPage">
       <widget class="QPushButton" name="pushButtonPreviousStep">

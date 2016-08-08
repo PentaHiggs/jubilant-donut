@@ -10,7 +10,8 @@ QPainterPath createPath(QPointF points[], int size);
 ImageLabelingScene::ImageLabelingScene() :
     QGraphicsScene(),
     labelingState(0),
-    tempSavedPoints{QPointF(), QPointF(), QPointF(), QPointF()}
+    tempSavedPoints{QPointF(), QPointF(), QPointF(), QPointF()},
+    currentLabeledImage(nullptr)
 {
     currentBox.x = -1;
     currentBox.y = -1;
@@ -198,7 +199,18 @@ void ImageLabelingScene::forward()
 void ImageLabelingScene::save()
 {
     if ((labelingState % totalStates) == 5) {
-        saveCurrent();
+
+        auto pair = std::pair<bRect, bRectTransform>(
+                    currentBox,
+                    currentLabeledImage->findRectTransform(
+                        currentBox,
+                        tempSavedPoints[0].toPoint(),
+                        tempSavedPoints[1].toPoint(),
+                        tempSavedPoints[2].toPoint(),
+                        tempSavedPoints[3].toPoint()
+                        )
+                    );
+        currentLabeledImage->bBoxes->operator[](labelingState/totalStates) = pair;
 
         QGraphicsPathItem *path = dynamic_cast<QGraphicsPathItem*>(gTempItems["path"]);
         QGraphicsPolygonItem *poly = new QGraphicsPolygonItem(path->path().toFillPolygon());
@@ -296,55 +308,47 @@ void ImageLabelingScene::back()
     }
 }
 
-void ImageLabelingScene::saveCurrent(){
-    if (labelingState % totalStates == 5) {
-        auto pair = std::pair<bRect, bRectTransform>(
-                    currentBox,
-                    currentLabeledImage->findRectTransform(
-                        currentBox,
-                        tempSavedPoints[0].toPoint(),
-                        tempSavedPoints[1].toPoint(),
-                        tempSavedPoints[2].toPoint(),
-                        tempSavedPoints[3].toPoint()
-                        )
-                    );
-        currentLabeledImage->bBoxes->operator[](labelingState/totalStates) = pair;
-    }
-}
+
 
 void ImageLabelingScene::changeImage(LabeledImage &labeledImage)
 {
-    QMessageBox msgBox;
-    msgBox.setText("Are you certain you want to load a new image?  Have all bounding boxes been labeled?  Any unsaved work will be lost.");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::Yes);
-    int ret = msgBox.exec();
-    switch (ret) {
-    case QMessageBox::Yes: {
-        for(auto item : gMouseoverItems.keys()) deleteItem(gMouseoverItems, item);
-        for(auto item : gTempItems.keys()) deleteItem(gTempItems, item);
+    if (currentLabeledImage != nullptr)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Are you certain you want to load a new image?  Have all bounding boxes been labeled?  Any unsaved work will be lost.");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Yes: {
+            for(auto item : gMouseoverItems.keys()) deleteItem(gMouseoverItems, item);
+            for(auto item : gTempItems.keys()) deleteItem(gTempItems, item);
 
-        for(auto item : gPermItems)
-            this->removeItem(item);
-        gPermItems.clear();
+            for(auto item : gPermItems)
+                this->removeItem(item);
+            gPermItems.clear();
 
-        tempSavedPoints[0] = QPointF();
-        tempSavedPoints[1] = QPointF();
-        tempSavedPoints[2] = QPointF();
-        tempSavedPoints[3] = QPointF();
+            tempSavedPoints[0] = QPointF();
+            tempSavedPoints[1] = QPointF();
+            tempSavedPoints[2] = QPointF();
+            tempSavedPoints[3] = QPointF();
 
-        currentBox.x = -1;
-        currentBox.y = -1;
-        currentBox.h = -1;
-        currentBox.w = -1;
+            currentBox.x = -1;
+            currentBox.y = -1;
+            currentBox.h = -1;
+            currentBox.w = -1;
 
-        labelingState = 0;
+            labelingState = 0;
+            currentLabeledImage = &labeledImage;
+            break; }
+        case QMessageBox::No:
+            return;
+        default:
+            return;
+        }
+    } else {
         currentLabeledImage = &labeledImage;
-        break; }
-    case QMessageBox::No:
-        return;
-    default:
-        return;
+        emit newInstruction("Select top-left side of the bounding rectangle around an object in the image","");
     }
 
 }

@@ -5,6 +5,10 @@
 
 #include <QFileDialog>
 #include <QGraphicsPixmapItem>
+#include <QMessageBox>
+
+void setReadOnly(QTextEdit*);
+
 
 window_main::window_main(QWidget *parent) :
     QMainWindow(parent),
@@ -12,10 +16,12 @@ window_main::window_main(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Set fielNameDisplayTextEdit to be read only but still selectable
-    ui->fileNameDisplayTextEdit->setReadOnly(true);
-    ui->fileNameDisplayTextEdit->setTextInteractionFlags(
-                ui->fileNameDisplayTextEdit->textInteractionFlags() | Qt::TextSelectableByKeyboard);
+    // Set the display text boxes to be read-only but still selectable.
+    setReadOnly(ui->fileNameDisplayTextEdit);
+    setReadOnly(ui->textBoxImageLabel);
+    setReadOnly(ui->textBoxImageNumber);
+    setReadOnly(ui->textBrowserInstruction);
+    setReadOnly(ui->textBrowserInstructionsCompleted);
 
     // Set widget stack to page_startPage and disable start button
     ui->stackedWidget->setCurrentIndex(0);
@@ -38,7 +44,10 @@ void window_main::on_pushButton_clicked()
     ui->fileNameDisplayTextEdit->setText(filename);
     QFile *xmlFile = new QFile(filename);
     if (!xmlFile->open(QIODevice::ReadWrite)){
-        // Insert implementation of error dialog here
+        QMessageBox msgBox;
+        msgBox.setText("Cannot open file with read/write permissions.  Make certain this program has\
+                       complete permissions to edit this file");
+        msgBox.exec();
         return;
     }
 
@@ -46,6 +55,7 @@ void window_main::on_pushButton_clicked()
     xmlImageLoader = new XmlImageLoader(xmlFile, QUrl::fromLocalFile(filename));
     QObject::connect(xmlImageLoader, SIGNAL(setImgNo(int,QString)),
                      this, SLOT(onImgNoChange(int,QString)));
+    // We can now push the button to get down to business!
     ui->pushButtonStartLabelling->setEnabled(true);
 }
 
@@ -69,14 +79,22 @@ void window_main::onNewInstruction(QString longStr, QString shortStr, bool back)
 
 void window_main::on_pushButtonStartLabelling_clicked()
 {
-    // We should load stuff!
-    LabeledImage *labeledImage = xmlImageLoader->next();
-    if(labeledImage != nullptr) {
-        // loading succeeded.  First lets create a scene, and place image in scene.
-        ImageLabelingScene *scene = new ImageLabelingScene(*labeledImage);
-        ui->graphicsView->setScene(scene);
-        // ui->graphicsView->fitInView(*labeledImage, Qt::KeepAspectRatio);
+    // We can create our scene to stick in the graphics view
+    ImageLabelingScene *scene = new ImageLabelingScene();
+    ui->graphicsView->setScene(scene);
 
+    // Lets take this opportunity to hook up our scene to the main_window
+    QObject::connect(scene, SIGNAL(newInstruction(QString,QString,bool)),
+                     this, SLOT(onNewInstruction(QString,QString,bool)));
+    QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));
+    QObject::connect(ui->pushButtonPreviousStep, SIGNAL(clicked(bool)), scene, SLOT(back()));
+
+
+    LabeledImage *labeledImage;
+
+    while ( (labeledImage = xmlImageLoader->next()) != nullptr)
+    {
+        // Stick image in scene
         // Now we need to hook up the ImageLabellingScene's slots to the LabeledImage signals
         QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseEnterImage(QPointF)),
                          dynamic_cast<QObject*>(scene), SLOT(mouseEnterImage(QPointF)));
@@ -86,17 +104,6 @@ void window_main::on_pushButtonStartLabelling_clicked()
                          dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
         QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
                          dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
-        QObject::connect(scene, SIGNAL(newInstruction(QString,QString,bool)),
-                         this, SLOT(onNewInstruction(QString,QString,bool)));
-
-
-        // Hook up the navigation buttons as well
-        QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));
-        QObject::connect(ui->pushButtonPreviousStep, SIGNAL(clicked(bool)), scene, SLOT(back()));
-
-
-    } else {
-        // loading failed, spawn popup telling user.
     }
 
 }
@@ -104,4 +111,10 @@ void window_main::on_pushButtonStartLabelling_clicked()
 void window_main::onImgNoChange(int n, QString s) {
     ui->textBoxImageNumber->setText(QString("%1").arg(n));
     ui->textBoxImageLabel->setText(s);
+}
+
+void setReadOnly(QTextEdit* w) {
+    w->setReadOnly(true);
+    w->setTextInteractionFlags(
+                Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 }
