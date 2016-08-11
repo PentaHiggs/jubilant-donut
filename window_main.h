@@ -7,6 +7,7 @@
 #include <QString>
 
 #include "xmlimageloader.h"
+#include "imagelabelingscene.h"
 
 namespace Ui {
 class window_main;
@@ -25,11 +26,16 @@ private slots:
     void on_pushButtonStartLabelling_clicked();
     void onNewInstruction(QString longStr, QString shortStr, bool back);
     void onImgNoChange(int, QString);
+    void onBRectDone();
+
+    void on_pushButtonYes_clicked();
+
+    void on_pushButtonNo_clicked();
 
 private:
     Ui::window_main *ui;
     XmlImageLoader* xmlImageLoader;
-
+    ImageLabelingScene *scene;
 };
 
 #endif // WINDOW_MAIN_H

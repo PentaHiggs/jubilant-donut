@@ -7,7 +7,7 @@
 #include <QUrl>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneHoverEvent>
-//#include <Eigen/LU>
+//#include <Eigen/Dense>
 
 typedef struct
 {
@@ -49,6 +49,7 @@ public:
     LabeledImage();
     ~LabeledImage();
 
+    void setImage(QPixmap&, QString&);
     bRectTransform findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D);
 
     QString label;
@@ -56,6 +57,8 @@ public:
 
     int width;
     int height;
+
+    QString url;
 signals:
     void mouseEnterImage(QPointF point);
     void mouseMoveOnImage(QPointF point);

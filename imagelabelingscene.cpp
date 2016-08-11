@@ -230,6 +230,7 @@ void ImageLabelingScene::save()
         currentBox.h = -1;
         currentBox.w = -1;
 
+        emit bRectDone();
         emit newInstruction("Select top-left side of the bounding rectangle around an object in the image",
                             QString("Labeled object number %1").arg(labelingState/totalStates + 1));
         labelingState ++;
@@ -314,38 +315,26 @@ void ImageLabelingScene::changeImage(LabeledImage &labeledImage)
 {
     if (currentLabeledImage != nullptr)
     {
-        QMessageBox msgBox;
-        msgBox.setText("Are you certain you want to load a new image?  Have all bounding boxes been labeled?  Any unsaved work will be lost.");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-        int ret = msgBox.exec();
-        switch (ret) {
-        case QMessageBox::Yes: {
-            for(auto item : gMouseoverItems.keys()) deleteItem(gMouseoverItems, item);
-            for(auto item : gTempItems.keys()) deleteItem(gTempItems, item);
+        for(auto item : gMouseoverItems.keys()) deleteItem(gMouseoverItems, item);
+        for(auto item : gTempItems.keys()) deleteItem(gTempItems, item);
 
-            for(auto item : gPermItems)
-                this->removeItem(item);
-            gPermItems.clear();
+        for(auto item : gPermItems)
+            this->removeItem(item);
+        gPermItems.clear();
 
-            tempSavedPoints[0] = QPointF();
-            tempSavedPoints[1] = QPointF();
-            tempSavedPoints[2] = QPointF();
-            tempSavedPoints[3] = QPointF();
+        tempSavedPoints[0] = QPointF();
+        tempSavedPoints[1] = QPointF();
+        tempSavedPoints[2] = QPointF();
+        tempSavedPoints[3] = QPointF();
 
-            currentBox.x = -1;
-            currentBox.y = -1;
-            currentBox.h = -1;
-            currentBox.w = -1;
+        currentBox.x = -1;
+        currentBox.y = -1;
+        currentBox.h = -1;
+        currentBox.w = -1;
 
-            labelingState = 0;
-            currentLabeledImage = &labeledImage;
-            break; }
-        case QMessageBox::No:
-            return;
-        default:
-            return;
-        }
+        labelingState = 0;
+        currentLabeledImage = &labeledImage;
+        return;
     } else {
         currentLabeledImage = &labeledImage;
         emit newInstruction("Select top-left side of the bounding rectangle around an object in the image","");

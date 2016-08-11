@@ -11,6 +11,11 @@ LabeledImage::~LabeledImage() {
     delete bBoxes;
 }
 
+void LabeledImage::setImage(QPixmap& pix, QString& url) {
+    this->setPixmap(pix);
+    this->url = url;
+}
+
 void LabeledImage::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     emit mouseEnterImage(event->scenePos());
     QGraphicsPixmapItem::hoverEnterEvent(event);
@@ -32,36 +37,40 @@ void LabeledImage::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 }
 
 bRectTransform LabeledImage::findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D){
-    /*(
-    Eigen::Matrix<float, 8, 8> k;
-    k <<    R.x,    R.y,    1,      0,      0,      0,      (-1)*R.x*A.x(),         (-1)*R.y*A.x(),
-            0,      0,      0,      R.x,    R.y,    1,      (-1)*R.x*A.y(),         (-1)*R.y*A.y(),
-            R,x,    R.y+R.h,1,      0,      0,      0,      (-1)*R.x*B.x(),         (-1)*(R.y+R.h)*B.x(),
-            0,      0,      0,      R.x,    R.y+R.h,1,      (-1)*R.x*B.y(),         (-1)*(R.y+R.h)*B.y(),
-            R.x+R.w,R.y+R.h,1,      0,      0,      0,      (-1)*(R.x+R.w)*C.x(),   (-1)*(R.y+R.h)*C.x(),
-            0,      0,      0,      R.x+R.w,R.y+R.h,1,      (-1)*(R.x+R.w)*C.y(),   (-1)*(R.y+R.h)*C.y(),
-            R.x+R.w,R.y,    1,      0,      0,      0,      (-1)*(R.x+R.w)*D.x(),   (-1)*R.y*D.x(),
-            0,      0,      0,      R.x+R.w,R.y,    1,      (-1)*(R.x+R.w)*D.y(),   (-1)*R.y*D.y();
 
-    Eigen::Matrix<float, 8, 8> inverseK;
-    bool invertible;
-    double determinant;
-    k.computeInverseAndDetWithCheck(inverseK, determinant, invertible);
-    Eigen::Matrix<float, 8, 1> u;
-    u <<    A.x(), A.y(), B.x(), B.y(),
-            C.x(), C.y(), D.x(), D.y();
-    Eigen::Matrix<float, 8, 1> M;
-    M = inverseK * u;
+    int x1 = R.x; int x2 = R.x; int x3 = R.x+R.w; int x4 = R.x+R.w;
+    int y1 = R.y; int y2 = R.y+R.h; int y3 = R.y+R.h; int y4 = R.y;
+
+    /*
+    Eigen::Matrix<float, 8, 9> M;
+    k <<    x1,     y1,     1,      0,      0,      0,      (-1)*x1*A.x(),  (-1)*y1*A.x(),  (-1)*A.x(),
+            0,      0,      0,      x1,     y1,     1,      (-1)*x1*A.y(),  (-1)*y1*A.y(),  (-1)*A.y(),
+            x2,     y2,     1,      0,      0,      0,      (-1)*x2*B.x(),  (-1)*y2*B.x(),  (-1)*B.x(),
+            0,      0,      0,      x2,     y2,     1,      (-1)*x2*B.y(),  (-1)*y2*B.y(),  (-1)*B.y(),
+            x3,     y3,     1,      0,      0,      0,      (-1)*x3*C.x(),  (-1)*y3*C.x(),  (-1)*C.x(),
+            0,      0,      0,      x3,     y3,     1,      (-1)*x3*C.y(),  (-1)*y3*C.y(),  (-1)*C.y(),
+            x4,     y4,     1,      0,      0,      0,      (-1)*x4*D.x(),  (-1)*y4*D.x(),  (-1)*D.x(),
+            0,      0,      0,      x4,     y4,     1,      (-1)*x4*D.y(),  (-1)*y4*D.y(),  (-1)*D.y();
+
+    Eigen::Matrix<float, 8, 1> z;
+    z << 0, 0, 0, 0, 0, 0, 0, 0;
+
+    Eigen::Matrix<float, 9, 1> sol = M.colPivHouseholderQr().solve(z);
+
+    // Going to normalize the entries of the matrix as a vector
+    Eigen::Matrix<float, 9, 1> m = sol.normalized();
+
     bRectTransform B;
-    B.m11 = M(0,0);
-    B.m12 = M(1,0);
-    B.m13 = M(2,0);
-    B.m21 = M(3,0);
-    B.m22 = M(4,0);
-    B.m23 = M(5,0);
-    B.m31 = M(6,0);
-    B.m32 = M(7,0);
-    B.m33 = 1.;
-    */
+    B.m11 = m(0,0);
+    B.m12 = m(1,0);
+    B.m13 = m(2,0);
+    B.m21 = m(3,0);
+    B.m22 = m(4,0);
+    B.m23 = m(5,0);
+    B.m31 = m(6,0);
+    B.m32 = m(7,0);
+    B.m33 = m(8,0);
+
+    return B */
     return bRectTransform();
 }

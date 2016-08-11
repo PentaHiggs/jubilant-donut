@@ -63,7 +63,7 @@ LabeledImage* XmlImageLoader::loadPicture(){
         QString resUrlText = xml.readElementText();
         QUrl resUrl(resUrlText);
         QPixmap pixmap = imgDownloader->download(resUrlText);
-        img->setPixmap(pixmap);
+        img->setImage(pixmap, resUrlText);
     } else {
         return nullptr;
     }

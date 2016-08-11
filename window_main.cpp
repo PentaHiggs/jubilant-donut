@@ -8,11 +8,12 @@
 #include <QMessageBox>
 
 void setReadOnly(QTextEdit*);
-
+void hookUpImage(LabeledImage*, ImageLabelingScene*);
 
 window_main::window_main(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::window_main)
+    ui(new Ui::window_main),
+    scene(nullptr)
 {
     ui->setupUi(this);
 
@@ -31,6 +32,7 @@ window_main::window_main(QWidget *parent) :
 window_main::~window_main()
 {
     delete ui;
+    delete scene;
 }
 
 void window_main::on_pushButton_clicked()
@@ -79,31 +81,30 @@ void window_main::onNewInstruction(QString longStr, QString shortStr, bool back)
 
 void window_main::on_pushButtonStartLabelling_clicked()
 {
-    // We can create our scene to stick in the graphics view
-    ImageLabelingScene *scene = new ImageLabelingScene();
-    ui->graphicsView->setScene(scene);
+    // Start and set up XML writer
 
-    // Lets take this opportunity to hook up our scene to the main_window
-    QObject::connect(scene, SIGNAL(newInstruction(QString,QString,bool)),
-                     this, SLOT(onNewInstruction(QString,QString,bool)));
-    QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));
-    QObject::connect(ui->pushButtonPreviousStep, SIGNAL(clicked(bool)), scene, SLOT(back()));
+    // Change stackedWidget page to the right one for labeling
+    ui->stackedWidget->setCurrentIndex(1);
 
+    if (scene == nullptr) {
+        scene = new ImageLabelingScene();
+        ui->graphicsView->setScene(scene);
 
+        // Lets take this opportunity to hook up our scene to the main_window
+        QObject::connect(scene, SIGNAL(newInstruction(QString,QString,bool)),
+                         this, SLOT(onNewInstruction(QString,QString,bool)));
+        QObject::connect(scene, SIGNAL(bRectDone()), this, SLOT(onBRectDone()));
+        QObject::connect(ui->pushButtonNextStep, SIGNAL(clicked(bool)), scene, SLOT(forward()));
+        QObject::connect(ui->pushButtonPreviousStep, SIGNAL(clicked(bool)), scene, SLOT(back()));
+    }
     LabeledImage *labeledImage;
 
-    while ( (labeledImage = xmlImageLoader->next()) != nullptr)
+    if  ( (labeledImage = xmlImageLoader->next()) != nullptr)
     {
         // Stick image in scene
-        // Now we need to hook up the ImageLabellingScene's slots to the LabeledImage signals
-        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseEnterImage(QPointF)),
-                         dynamic_cast<QObject*>(scene), SLOT(mouseEnterImage(QPointF)));
-        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseMoveOnImage(QPointF)),
-                         dynamic_cast<QObject*>(scene), SLOT(mouseMoveOnImage(QPointF)));
-        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseLeaveImage()),
-                         dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
-        QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
-                         dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
+        void hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene);
+    } else {
+        //
     }
 
 }
@@ -113,8 +114,42 @@ void window_main::onImgNoChange(int n, QString s) {
     ui->textBoxImageLabel->setText(s);
 }
 
+void window_main::onBRectDone(){
+    ui->stackedWidget->setCurrentIndex(2);
+}
+
 void setReadOnly(QTextEdit* w) {
     w->setReadOnly(true);
     w->setTextInteractionFlags(
                 Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+}
+
+void window_main::on_pushButtonYes_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
+void window_main::on_pushButtonNo_clicked()
+{
+    // Insert some code for adding the image to the XML file
+    LabeledImage* labeledImage;
+    // Load the next image
+    if  ( (labeledImage = xmlImageLoader->next()) != nullptr)
+        hookUpImage(labeledImage, this->scene);
+    else {
+        // We're outta stuff!  Let XML know
+    }
+
+}
+
+void hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene){
+    QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseEnterImage(QPointF)),
+                     dynamic_cast<QObject*>(scene), SLOT(mouseEnterImage(QPointF)));
+    QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseMoveOnImage(QPointF)),
+                     dynamic_cast<QObject*>(scene), SLOT(mouseMoveOnImage(QPointF)));
+    QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseLeaveImage()),
+                     dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
+    QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
+                     dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
+    scene->changeImage(*labeledImage);
 }
