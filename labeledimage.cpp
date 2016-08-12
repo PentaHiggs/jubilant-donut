@@ -1,5 +1,5 @@
 #include "labeledimage.h"
-
+#include <Eigen/Dense>
 
 
 LabeledImage::LabeledImage() : QGraphicsPixmapItem()
@@ -41,9 +41,8 @@ bRectTransform LabeledImage::findRectTransform(bRect R, QPoint A, QPoint B, QPoi
     int x1 = R.x; int x2 = R.x; int x3 = R.x+R.w; int x4 = R.x+R.w;
     int y1 = R.y; int y2 = R.y+R.h; int y3 = R.y+R.h; int y4 = R.y;
 
-    /*
     Eigen::Matrix<float, 8, 9> M;
-    k <<    x1,     y1,     1,      0,      0,      0,      (-1)*x1*A.x(),  (-1)*y1*A.x(),  (-1)*A.x(),
+    M <<    x1,     y1,     1,      0,      0,      0,      (-1)*x1*A.x(),  (-1)*y1*A.x(),  (-1)*A.x(),
             0,      0,      0,      x1,     y1,     1,      (-1)*x1*A.y(),  (-1)*y1*A.y(),  (-1)*A.y(),
             x2,     y2,     1,      0,      0,      0,      (-1)*x2*B.x(),  (-1)*y2*B.x(),  (-1)*B.x(),
             0,      0,      0,      x2,     y2,     1,      (-1)*x2*B.y(),  (-1)*y2*B.y(),  (-1)*B.y(),
@@ -60,17 +59,17 @@ bRectTransform LabeledImage::findRectTransform(bRect R, QPoint A, QPoint B, QPoi
     // Going to normalize the entries of the matrix as a vector
     Eigen::Matrix<float, 9, 1> m = sol.normalized();
 
-    bRectTransform B;
-    B.m11 = m(0,0);
-    B.m12 = m(1,0);
-    B.m13 = m(2,0);
-    B.m21 = m(3,0);
-    B.m22 = m(4,0);
-    B.m23 = m(5,0);
-    B.m31 = m(6,0);
-    B.m32 = m(7,0);
-    B.m33 = m(8,0);
+    bRectTransform b;
+    b.m11 = m(0,0);
+    b.m12 = m(1,0);
+    b.m13 = m(2,0);
+    b.m21 = m(3,0);
+    b.m22 = m(4,0);
+    b.m23 = m(5,0);
+    b.m31 = m(6,0);
+    b.m32 = m(7,0);
+    b.m33 = m(8,0);
 
-    return B */
-    return bRectTransform();
+    return b;
+    //return bRectTransform();
 }

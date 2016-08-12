@@ -28,7 +28,7 @@ HEADERS  += window_main.h \
 
 FORMS    += window_main.ui
 
-#INCLUDEPATH += $$PWD/Eigen/
+INCLUDEPATH += E:\Eigen\include\eigen3
 
 DISTFILES += \
     picture_batch.xsd
