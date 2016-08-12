@@ -311,7 +311,7 @@ void ImageLabelingScene::back()
 
 
 
-void ImageLabelingScene::changeImage(LabeledImage &labeledImage)
+LabeledImage* ImageLabelingScene::changeImage(LabeledImage &labeledImage)
 {
     if (currentLabeledImage != nullptr)
     {
@@ -333,8 +333,9 @@ void ImageLabelingScene::changeImage(LabeledImage &labeledImage)
         currentBox.w = -1;
 
         labelingState = 0;
+        LabeledImage* oldImage = currentLabeledImage;
         currentLabeledImage = &labeledImage;
-        return;
+        return oldImage;
     } else {
         currentLabeledImage = &labeledImage;
         emit newInstruction("Select top-left side of the bounding rectangle around an object in the image","");

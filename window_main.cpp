@@ -8,7 +8,7 @@
 #include <QMessageBox>
 
 void setReadOnly(QTextEdit*);
-void hookUpImage(LabeledImage*, ImageLabelingScene*);
+LabeledImage* hookUpImage(LabeledImage*, ImageLabelingScene*);
 
 window_main::window_main(QWidget *parent) :
     QMainWindow(parent),
@@ -55,6 +55,8 @@ void window_main::on_pushButton_clicked()
 
     // Pass file to XML reader so it can get down to business
     xmlImageLoader = new XmlImageLoader(xmlFile, QUrl::fromLocalFile(filename));
+    xmlImageSaver = new XmlImageSaver(xmlFile, QUrl::fromLocalFile(filename));
+
     QObject::connect(xmlImageLoader, SIGNAL(setImgNo(int,QString)),
                      this, SLOT(onImgNoChange(int,QString)));
     // We can now push the button to get down to business!
@@ -102,7 +104,7 @@ void window_main::on_pushButtonStartLabelling_clicked()
     if  ( (labeledImage = xmlImageLoader->next()) != nullptr)
     {
         // Stick image in scene
-        void hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene);
+        hookUpImage(labeledImage, scene);
     } else {
         //
     }
@@ -133,16 +135,18 @@ void window_main::on_pushButtonNo_clicked()
 {
     // Insert some code for adding the image to the XML file
     LabeledImage* labeledImage;
+    LabeledImage* oldImage = nullptr;
     // Load the next image
     if  ( (labeledImage = xmlImageLoader->next()) != nullptr)
-        hookUpImage(labeledImage, this->scene);
+        xmlImageSaver->toXml(hookUpImage(labeledImage, this->scene);
     else {
         // We're outta stuff!  Let XML know
+        xmlImageSaver->saveXml();
     }
 
 }
 
-void hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene){
+LabeledImage* hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene){
     QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseEnterImage(QPointF)),
                      dynamic_cast<QObject*>(scene), SLOT(mouseEnterImage(QPointF)));
     QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseMoveOnImage(QPointF)),
@@ -151,5 +155,5 @@ void hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene){
                      dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
     QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
                      dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
-    scene->changeImage(*labeledImage);
+    return scene->changeImage(*labeledImage);
 }

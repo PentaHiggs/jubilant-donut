@@ -8,6 +8,7 @@
 
 #include "xmlimageloader.h"
 #include "imagelabelingscene.h"
+#include "xmlimagesaver.h"
 
 namespace Ui {
 class window_main;
@@ -35,6 +36,7 @@ private slots:
 private:
     Ui::window_main *ui;
     XmlImageLoader* xmlImageLoader;
+    XmlImageSaver* xmlImageSaver;
     ImageLabelingScene *scene;
 };
 
