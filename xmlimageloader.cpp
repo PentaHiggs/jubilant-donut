@@ -1,5 +1,3 @@
-
-
 #include <memory>
 
 #include <QUrl>

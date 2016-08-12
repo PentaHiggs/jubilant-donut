@@ -15,7 +15,7 @@ class ImageLabelingScene : public QGraphicsScene
 public:
     ImageLabelingScene();
     ImageLabelingScene(LabeledImage &labeledImage);
-    void changeImage(LabeledImage &labeledImage);
+    LabeledImage* changeImage(LabeledImage &labeledImage);
     ~ImageLabelingScene();
 
 public slots:
