@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
+#include <QTemporaryFile>
 
 void setReadOnly(QTextEdit*);
 LabeledImage* hookUpImage(LabeledImage*, ImageLabelingScene*);
@@ -55,7 +56,18 @@ void window_main::on_pushButton_clicked()
 
     // Pass file to XML reader so it can get down to business
     xmlImageLoader = new XmlImageLoader(xmlFile, QUrl::fromLocalFile(filename));
-    xmlImageSaver = new XmlImageSaver(xmlFile, QUrl::fromLocalFile(filename));
+
+
+    QTemporaryFile* file;
+
+    if (!file->open()) {
+        QMessageBox msgBox;
+        msgBox.setText("Could not open a temporary file.  Make sure program has file modifying permissions.");
+        msgBox.exec();
+        return;
+    }
+
+    xmlImageSaver = new XmlImageSaver(file);
 
     QObject::connect(xmlImageLoader, SIGNAL(setImgNo(int,QString)),
                      this, SLOT(onImgNoChange(int,QString)));
@@ -138,7 +150,7 @@ void window_main::on_pushButtonNo_clicked()
     LabeledImage* oldImage = nullptr;
     // Load the next image
     if  ( (labeledImage = xmlImageLoader->next()) != nullptr)
-        xmlImageSaver->toXml(hookUpImage(labeledImage, this->scene);
+        xmlImageSaver->toXml(hookUpImage(labeledImage, this->scene));
     else {
         // We're outta stuff!  Let XML know
         xmlImageSaver->saveXml();

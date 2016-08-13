@@ -88,23 +88,23 @@ LabeledImage* XmlImageLoader::loadPicture(){
             xml.readNextStartElement();
             if (xml.name() != "brect_transform") return nullptr;
             xml.readNextStartElement(); // <m11>
-            bTrans.m11 = xml.readElementText().toInt();
+            bTrans.m11 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m12>
-            bTrans.m12 = xml.readElementText().toInt();
+            bTrans.m12 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m13>
-            bTrans.m13 = xml.readElementText().toInt();
+            bTrans.m13 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m21>
-            bTrans.m21 = xml.readElementText().toInt();
+            bTrans.m21 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m22>
-            bTrans.m22 = xml.readElementText().toInt();
+            bTrans.m22 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m23>
-            bTrans.m23 = xml.readElementText().toInt();
+            bTrans.m23 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m31>
-            bTrans.m31 = xml.readElementText().toInt();
+            bTrans.m31 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m32>
-            bTrans.m32 = xml.readElementText().toInt();
+            bTrans.m32 = xml.readElementText().toFloat();
             xml.readNextStartElement(); // <m33>
-            bTrans.m33 = xml.readElementText().toInt();
+            bTrans.m33 = xml.readElementText().toFloat();
 
             pair = std::make_pair(bRec, bTrans);
             img->bBoxes->append(pair);
