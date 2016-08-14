@@ -7,7 +7,7 @@
 XmlImageSaver::XmlImageSaver()
 {
     temp.open();
-    writer.setDevice(temp);
+    writer.setDevice(&temp);
     writer.setAutoFormatting(true);
     writer.writeStartDocument();
     writer.writeDTD("<!DOCTYPE picture_batch>");

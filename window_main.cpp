@@ -57,7 +57,7 @@ void window_main::on_pushButton_clicked()
     }
 
     // Pass file to XML reader so it can get down to business
-    xmlImageLoader = new XmlImageLoader(xmlFile, QUrl::fromLocalFile(filename));
+    xmlImageLoader = new XmlImageLoader(xmlFile);
 
 
     QTemporaryFile* file;
@@ -85,7 +85,6 @@ void window_main::onNewInstruction(QString longStr, QString shortStr, bool back)
             ui->textBrowserInstructionsCompleted->insertPlainText(shortStr);
             ui->textBrowserInstructionsCompleted->insertPlainText("\n");
         } else {
-            // how to delete a line...
             QString txt = ui->textBrowserInstructionsCompleted->toPlainText()
                     .section("/n", 0, -2, QString::SectionIncludeTrailingSep);
             txt.append("shortStr");
@@ -97,8 +96,6 @@ void window_main::onNewInstruction(QString longStr, QString shortStr, bool back)
 
 void window_main::on_pushButtonStartLabelling_clicked()
 {
-    // Start and set up XML writer
-
     // Change stackedWidget page to the right one for labeling
     ui->stackedWidget->setCurrentIndex(1);
 

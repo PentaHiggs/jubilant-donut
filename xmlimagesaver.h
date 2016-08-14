@@ -11,14 +11,14 @@
 class XmlImageSaver
 {
 public:
-    XmlImageSaver(QIODevice*);
+    XmlImageSaver();
     ~XmlImageSaver();
 
     void saveXml();
     void toXml(LabeledImage*);
 private:
     QXmlStreamWriter writer;
-    QTemporaryFile* temp;
+    QTemporaryFile temp;
 };
 
 #endif // XMLIMAGESAVER_H

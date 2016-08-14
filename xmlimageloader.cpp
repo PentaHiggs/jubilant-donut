@@ -9,18 +9,18 @@
 #include "labeledimage.h"
 #include "imagedownloader.h"
 
-XmlImageLoader::XmlImageLoader(QIODevice *xmlFile, QUrl uri)
+XmlImageLoader::XmlImageLoader(QIODevice *xmlFile)
 {
     imgDownloader = new ImageDownloader();
     xml.setDevice(xmlFile);
 
-    QUrl schemaUrl(":/picture_batch.xsd");
+    QUrl schemaUrl("qrc:/picture_batch.xsd");
     QXmlSchema schema;
     schema.load(schemaUrl);
     if (schema.isValid()) {
         QXmlSchemaValidator validator(schema);
-        if (validator.validate(xmlFile, uri)) {
-            qDebug() << "Loaded xml" << uri.fileName() << "is valid";
+        if (validator.validate(xmlFile)) {
+            qDebug() << "Loaded xml is valid";
             // This variable is increased by 1 ever time we read a labeledImage
             currentImgNo = -1;
             do xml.readNextStartElement();

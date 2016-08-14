@@ -18,7 +18,7 @@ class XmlImageLoader : public QObject
     Q_OBJECT
 
 public:
-    XmlImageLoader(QIODevice *device, QUrl uri);
+    XmlImageLoader(QIODevice *device);
     XmlImageLoader();
     virtual ~XmlImageLoader();
     QString errorString() const;
