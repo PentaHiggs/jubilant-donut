@@ -20,11 +20,13 @@ XmlImageLoader::XmlImageLoader(QIODevice *xmlFile)
     if (schema.isValid()) {
         QXmlSchemaValidator validator(schema);
         if (validator.validate(xmlFile)) {
-            qDebug() << "Loaded xml is valid";
+            // QIODevice needs to be reset back to zero after validator went through it
+            xmlFile->reset();
             // This variable is increased by 1 ever time we read a labeledImage
             currentImgNo = -1;
-            do xml.readNextStartElement();
-            while (xml.name() != "picture_batch");
+            if (xml.readNextStartElement()) {
+                qDebug() << xml.name();
+            }
         } else {
             xml.raiseError(QObject::tr("The file is not a valid picture_batch file"));
             return;
