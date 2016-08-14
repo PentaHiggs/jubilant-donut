@@ -67,7 +67,7 @@ void window_main::on_pushButton_clicked()
         return;
     }
 
-    xmlImageSaver = new XmlImageSaver(file);
+    xmlImageSaver = new XmlImageSaver();
 
     QObject::connect(xmlImageLoader, SIGNAL(setImgNo(int,QString)),
                      this, SLOT(onImgNoChange(int,QString)));

@@ -47,13 +47,16 @@ LabeledImage *XmlImageLoader::next() {
 
 LabeledImage* XmlImageLoader::loadPicture(){
     LabeledImage *img =  new LabeledImage();
+
     xml.readNextStartElement();
     if (xml.name() == "label")
     {
         QString label = xml.readElementText();
         img->label = label;
-    } else
+    } else {
+        qDebug() << "Invalid XML reading state: attempted to read label but failed";
         return nullptr;
+    }
 
     xml.readNextStartElement();
     if (xml.name() == "resource_url")
@@ -63,8 +66,10 @@ LabeledImage* XmlImageLoader::loadPicture(){
         QPixmap pixmap = imgDownloader->download(resUrlText);
         img->setImage(pixmap, resUrlText);
     } else {
+        qDebug() << "Invalid XML reading state: attempted to read resource_url but failed";
         return nullptr;
     }
+
     xml.readNextStartElement();
     if (xml.name() == "bounding_boxes")
     {
@@ -111,6 +116,7 @@ LabeledImage* XmlImageLoader::loadPicture(){
         }
 
     }
+
     currentImgNo++;
     emit setImgNo(currentImgNo, img->label);
     return img;

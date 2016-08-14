@@ -17,7 +17,7 @@ public:
     void saveXml();
     void toXml(LabeledImage*);
 private:
-    QXmlStreamWriter* writer;
+    QXmlStreamWriter writer;
     QTemporaryFile* temp;
 };
 
