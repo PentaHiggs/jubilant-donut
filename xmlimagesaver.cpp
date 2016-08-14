@@ -4,9 +4,10 @@
 #include <QString>
 #include <QFileDialog>
 
-XmlImageSaver::XmlImageSaver(QIODevice* dev)
+XmlImageSaver::XmlImageSaver()
 {
-    writer.setDevice(dev);
+    temp.open();
+    writer.setDevice(temp);
     writer.setAutoFormatting(true);
     writer.writeStartDocument();
     writer.writeDTD("<!DOCTYPE picture_batch>");
@@ -32,11 +33,11 @@ void XmlImageSaver::saveXml()
 
     QByteArray buffer;
     int chunkSize = 100;
-    while ( !(buffer = temp->read(chunkSize)).isEmpty())
+    while ( !(buffer = temp.read(chunkSize)).isEmpty())
     {
         file.write(buffer);
     }
-    temp->close();
+    temp.close();
     file.close();
 }
 

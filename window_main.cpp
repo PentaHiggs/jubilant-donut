@@ -34,6 +34,8 @@ window_main::~window_main()
 {
     delete ui;
     delete scene;
+    delete xmlImageLoader;
+    delete xmlImageSaver;
 }
 
 void window_main::on_pushButton_clicked()
