@@ -33,8 +33,10 @@ QPixmap ImageDownloader::download(QUrl imageUrl) {
         // success!
         QByteArray data = reply->readAll();
         img.loadFromData(data);
+        qDebug() << "Image successfully loaded from url " << imageUrl;
     } else {
         // failure : <
+        qDebug() << "Image loading from url" << imageUrl << "failed.";
     }
     return img;
 }

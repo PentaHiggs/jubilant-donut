@@ -333,12 +333,20 @@ LabeledImage* ImageLabelingScene::changeImage(LabeledImage &labeledImage)
         currentBox.w = -1;
 
         labelingState = 0;
+
         LabeledImage* oldImage = currentLabeledImage;
+        this->removeItem(oldImage);
+
         currentLabeledImage = &labeledImage;
+        this->addItem(currentLabeledImage);
+
         return oldImage;
     } else {
         currentLabeledImage = &labeledImage;
+        this->addItem(currentLabeledImage);
+
         emit newInstruction("Select top-left side of the bounding rectangle around an object in the image","");
+        return nullptr;
     }
 
 }

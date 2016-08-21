@@ -28,6 +28,7 @@ window_main::window_main(QWidget *parent) :
     // Set widget stack to page_startPage and disable start button
     ui->stackedWidget->setCurrentIndex(0);
     ui->pushButtonStartLabelling->setEnabled(false);
+
 }
 
 window_main::~window_main()
@@ -60,7 +61,7 @@ void window_main::on_pushButton_clicked()
     xmlImageLoader = new XmlImageLoader(xmlFile);
 
 
-    QTemporaryFile* file;
+    QTemporaryFile* file = new QTemporaryFile();
 
     if (!file->open()) {
         QMessageBox msgBox;
@@ -75,6 +76,7 @@ void window_main::on_pushButton_clicked()
                      this, SLOT(onImgNoChange(int,QString)));
     // We can now push the button to get down to business!
     ui->pushButtonStartLabelling->setEnabled(true);
+
 }
 
 void window_main::onNewInstruction(QString longStr, QString shortStr, bool back) {
@@ -117,7 +119,7 @@ void window_main::on_pushButtonStartLabelling_clicked()
         // Stick image in scene
         hookUpImage(labeledImage, scene);
     } else {
-        //
+        qDebug() << "No image returned by xmlImageLoader";
     }
 
 }
@@ -165,6 +167,6 @@ LabeledImage* hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene)
     QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseLeaveImage()),
                      dynamic_cast<QObject*>(scene), SLOT(mouseLeaveImage()));
     QObject::connect(dynamic_cast<QObject*>(labeledImage), SIGNAL(mouseClickImage(QPointF)),
-                     dynamic_cast<QObject*>(scene), SLOT(mouseClickImage()));
+                     dynamic_cast<QObject*>(scene), SLOT(mouseClickImage(QPointF)));
     return scene->changeImage(*labeledImage);
 }
