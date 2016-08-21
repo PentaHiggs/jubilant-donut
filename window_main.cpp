@@ -28,7 +28,6 @@ window_main::window_main(QWidget *parent) :
     // Set widget stack to page_startPage and disable start button
     ui->stackedWidget->setCurrentIndex(0);
     ui->pushButtonStartLabelling->setEnabled(false);
-
 }
 
 window_main::~window_main()
@@ -119,7 +118,7 @@ void window_main::on_pushButtonStartLabelling_clicked()
         // Stick image in scene
         hookUpImage(labeledImage, scene);
     } else {
-        qDebug() << "No image returned by xmlImageLoader";
+        qDebug() << "No image returned by" <<  " xmlImageLoader";
     }
 
 }

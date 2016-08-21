@@ -1,9 +1,9 @@
 #include "imagelabelingscene.h"
 
-#include <string>
 #include <QGraphicsPathItem>
 #include <QGraphicsEllipseItem>
 #include <QMessageBox>
+#include <QtDebug>
 
 QPainterPath createPath(QPointF points[], int size);
 
@@ -33,6 +33,7 @@ ImageLabelingScene::~ImageLabelingScene() {
 
 void ImageLabelingScene::mouseEnterImage(QPointF point)
 {
+    qDebug() << "mouseEnterImage @ " << point << " w/ state" << labelingState;
     switch(labelingState % totalStates){
     case 0:
     case 1: {
@@ -78,11 +79,13 @@ void ImageLabelingScene::mouseMoveOnImage(QPointF point)
 
 void ImageLabelingScene::mouseLeaveImage()
 {
+    qDebug() << "mouseLeaveImage()";
     for(QString i: gMouseoverItems.keys()) deleteItem(gMouseoverItems, i);
 }
 
 void ImageLabelingScene::mouseClickImage(QPointF point)
 {
+    qDebug() << "mouseClickImage @ " << point << " w/ state" << labelingState;
     switch(labelingState % totalStates) {
     case 0: {
         gTempItems["horizontalLine"] = modifyOrNew<QGraphicsLineItem>(gMouseoverItems, "horizontalLine");

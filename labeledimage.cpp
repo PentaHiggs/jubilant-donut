@@ -1,6 +1,6 @@
 #include "labeledimage.h"
 #include <Eigen/Dense>
-
+#include <QtDebug>
 
 LabeledImage::LabeledImage() : QGraphicsPixmapItem()
 {
@@ -31,7 +31,13 @@ void LabeledImage::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     QGraphicsPixmapItem::hoverLeaveEvent(event);
 }
 
+void LabeledImage::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    qDebug() << "mousePressEvent";
+    QGraphicsPixmapItem::mousePressEvent(event);
+}
+
 void LabeledImage::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+    qDebug() << "mouseReleaseEvent" << event->scenePos();
     emit mouseClickImage(event->scenePos());
     QGraphicsPixmapItem::mouseReleaseEvent(event);
 }
