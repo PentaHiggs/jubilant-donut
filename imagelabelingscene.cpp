@@ -36,40 +36,35 @@ void ImageLabelingScene::mouseEnterImage(QPointF point)
     qDebug() << "mouseEnterImage @ " << point << " w/ state" << labelingState;
     switch(labelingState % totalStates){
     case 0:
-    case 1: {
-        modifyOrNew<QGraphicsLineItem>(gMouseoverItems, "horizontalLine")
-            ->setLine(QLineF(point, point+QPointF(1,0)));
-        modifyOrNew<QGraphicsLineItem>(gMouseoverItems, "verticalLine")
-            ->setLine(QLineF(point, point+QPointF(0,1)));
-        break; }
-    case 2: {
-        modifyOrNew<QGraphicsEllipseItem>(gMouseoverItems, "circle")
-            ->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
-        break; }
+    case 1:
+        drawCrosshairs(point, gMouseoverItems);
+        break;
+    case 2:
+        drawCircle(point, gMouseoverItems, "circle");
+        break;
     case 3: {
-        modifyOrNew<QGraphicsEllipseItem>(gMouseoverItems, "circle")
-            ->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gMouseoverItems, "circle");
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gMouseoverItems, "path");
         path->setPath(createPath(tempSavedPoints, 2));
         path->setPen(QPen(Qt::DashLine));
 
         break; }
     case 4: {
-        modifyOrNew<QGraphicsEllipseItem>(gMouseoverItems, "circle")
-            ->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gMouseoverItems, "circle");
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gMouseoverItems, "path");
         path->setPath(createPath(tempSavedPoints, 3));
         path->setPen(QPen(Qt::DashLine));
         break; }
     case 5: {
-        modifyOrNew<QGraphicsEllipseItem>(gMouseoverItems, "circle")
-            ->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gMouseoverItems, "circle");
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gMouseoverItems, "path");
-        path->setPath(createPath(tempSavedPoints, 4));
         path->setPen(QPen(Qt::DashLine));
-        path->path().closeSubpath();
+        QPainterPath pPath = QPainterPath(createPath(tempSavedPoints, 4));
+        pPath.closeSubpath();
+        path->setPath(pPath);
         break; }
     }
+
 }
 
 void ImageLabelingScene::mouseMoveOnImage(QPointF point)
@@ -97,7 +92,11 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         labelingState++;
         break; }
     case 1: {
-        QPointF point1 = dynamic_cast<QGraphicsLineItem*>(gTempItems["horizontalLine"])->line().p1();
+        QPointF point1;
+        dynamic_cast<QGraphicsLineItem*>(gTempItems["horizontalLine"])->line().intersect(
+                    dynamic_cast<QGraphicsLineItem*>(gTempItems["verticalLine"])->line(),
+                    &point1
+                    );
         QRectF rect(point1, point);
         QGraphicsRectItem *item = new QGraphicsRectItem(rect);
         QPen pen = QPen();
@@ -121,8 +120,7 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         labelingState++;
         break; }
     case 2: {
-        QGraphicsEllipseItem *circle1 = modifyOrNew<QGraphicsEllipseItem>(gTempItems, "circle1");
-        circle1->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gTempItems, "circle1");
         tempSavedPoints[0] = point;
         emit newInstruction("Select top-right corner of bounding quadrilateral inside current bounding rectangle \
                                 (proceed clockwise)","");
@@ -130,8 +128,7 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         break; }
     case 3: {
         tempSavedPoints[1] = point;
-        QGraphicsEllipseItem *circle2 = modifyOrNew<QGraphicsEllipseItem>(gTempItems, "circle2");
-        circle2->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gTempItems, "circle2");;
 
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 2));
@@ -142,8 +139,7 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         break; }
     case 4: {
         tempSavedPoints[2] = point;
-        QGraphicsEllipseItem *circle3 = modifyOrNew<QGraphicsEllipseItem>(gTempItems, "circle3");
-        circle3->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gTempItems, "circle3");
 
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 3));
@@ -154,12 +150,13 @@ void ImageLabelingScene::mouseClickImage(QPointF point)
         break; }
     case 5: {
         tempSavedPoints[3] = point;
-        QGraphicsEllipseItem *circle4 = modifyOrNew<QGraphicsEllipseItem>(gTempItems, "circle4");
-        circle4->setRect(QRectF(point.x()-.05, point.y()-.05,.1, .1));
+        drawCircle(point, gTempItems, "circle4");
 
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
         path->setPath(createPath(tempSavedPoints, 4));
-        path->path().closeSubpath();
+        QPainterPath k = QPainterPath(path->path());
+        k.closeSubpath();
+        path->setPath(k);
 
         // Save must be clicked at this point to save current polygon
         emit newInstruction("Press save in order to save the current bounding quadrilateral; \
@@ -358,8 +355,10 @@ template<typename T>
 T* ImageLabelingScene::modifyOrNew(QMap<QString, QGraphicsItem*> &map, QString itemStr){
     auto item = map.find(itemStr);
     if (item != map.end()){
+        qDebug() << "modifyOrNew() Existing Item";
         return dynamic_cast<T*>(item.value());
     } else {
+        qDebug() << "modifyOrNew() New Item";
         T* retItem = new T();
         map[itemStr] = retItem;
         this->addItem(retItem);
@@ -381,4 +380,38 @@ QPainterPath createPath(QPointF points[], int size){
         path.lineTo(points[i]);
     }
     return path;
+}
+
+QGraphicsEllipseItem* ImageLabelingScene::drawCircle(QPointF point, QMap<QString, QGraphicsItem*> &map, QString name) {
+    QGraphicsEllipseItem *circle = modifyOrNew<QGraphicsEllipseItem>(map, name);
+    circle->setRect(QRectF(point.x()-2, point.y()-2,4.,4.));
+    return circle;
+}
+void ImageLabelingScene::drawCrosshairs(QPointF point, QMap<QString, QGraphicsItem*> &map, QString name, int length, QPen style) {
+    QRectF bounds = QRectF(QPointF(0,0), QSizeF(this->currentLabeledImage->width, this->currentLabeledImage->height));
+    QPointF left, right, top, bot;
+    if (length <= -1) {
+        left = QPointF(0,point.y());
+        right = QPointF(bounds.width(), point.y());
+
+        top = QPointF(point.x(), 0);
+        bot = QPointF(point.x(), bounds.height());
+    } else {
+        left = point + QPointF(-length/2.,0);
+        if ( left.x() < 0.) left = QPointF(0, point.y());
+        right = point + QPointF(length/2.,0);
+        if ( right.x() > bounds.width()) right = QPointF(bounds.width(),point.y());
+        top = point + QPointF(0,-length/2.);
+        if ( top.y() < 0.) top = QPointF(point.x(), 0);
+        bot = point + QPointF(0, length/2.);
+        if ( bot.y() > bounds.height()) bot = QPointF(point.x(),bounds.height());
+    }
+    QGraphicsLineItem* horiz = modifyOrNew<QGraphicsLineItem>(map, QString("horizontalLine").append(name));
+    horiz->setLine(QLineF(left, right));
+    horiz->setPen(style);
+
+    QGraphicsLineItem* vert = modifyOrNew<QGraphicsLineItem>(map, QString("verticalLine").append(name));
+    vert->setLine(QLineF(top, bot));
+    vert->setPen(style);
+    return;
 }

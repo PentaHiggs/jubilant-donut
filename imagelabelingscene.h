@@ -46,6 +46,8 @@ private:
 
     template<typename T> T* modifyOrNew(QMap<QString, QGraphicsItem*> &, QString);
     void deleteItem(QMap<QString, QGraphicsItem*> &, QString);
+    QGraphicsEllipseItem* drawCircle(QPointF point, QMap<QString, QGraphicsItem*> &map, QString name);
+    void drawCrosshairs(QPointF point, QMap<QString, QGraphicsItem*> &map, QString name=QString(), int length=-1, QPen style=QPen());
 };
 
 #endif // IMAGELABELINGSCENE_H
