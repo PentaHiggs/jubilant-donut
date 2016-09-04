@@ -45,25 +45,30 @@ void ImageLabelingScene::mouseEnterImage(QPointF point)
     case 3: {
         drawCircle(point, gMouseoverItems, "circle");
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gMouseoverItems, "path");
-        path->setPath(createPath(tempSavedPoints, 2));
+        path->setPath(createPath(tempSavedPoints, 1));
         path->setPen(QPen(Qt::DashLine));
 
         break; }
     case 4: {
         drawCircle(point, gMouseoverItems, "circle");
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gMouseoverItems, "path");
-        path->setPath(createPath(tempSavedPoints, 3));
+        path->setPath(createPath(tempSavedPoints, 2));
         path->setPen(QPen(Qt::DashLine));
         break; }
     case 5: {
         drawCircle(point, gMouseoverItems, "circle");
         QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gMouseoverItems, "path");
         path->setPen(QPen(Qt::DashLine));
-        QPainterPath pPath = QPainterPath(createPath(tempSavedPoints, 4));
-        pPath.closeSubpath();
-        path->setPath(pPath);
+        if (tempSavedPoints[3].isNull()) {
+            path->setPath(createPath(tempSavedPoints, 3));
+            path->setPen(QPen(Qt::DashLine));
+        } else {
+            QPainterPath pPath = QPainterPath(createPath(tempSavedPoints, 4));
+            pPath.closeSubpath();
+            path->setPath(pPath);
+            }
         break; }
-    }
+        }
 
 }
 
