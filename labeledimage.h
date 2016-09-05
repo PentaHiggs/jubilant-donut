@@ -51,7 +51,7 @@ public:
 
     void setImage(QPixmap&, QString&);
     bRectTransform findRectTransform(bRect R, QPoint A, QPoint B, QPoint C, QPoint D);
-
+    void setBbox(std::pair<bRect, bRectTransform> Bbox, int index);
     QString label;
     QVector< std::pair<bRect, bRectTransform> > *bBoxes;
 

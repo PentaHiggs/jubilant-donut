@@ -195,7 +195,8 @@ void ImageLabelingScene::forward()
         break;
     case 5:
         if (!tempSavedPoints[3].isNull()){
-            mouseClickImage(tempSavedPoints[3]);
+            // mouseClickImage(tempSavedPoints[3]);
+            this->save();
         }
         break;
     }
@@ -204,7 +205,6 @@ void ImageLabelingScene::forward()
 void ImageLabelingScene::save()
 {
     if ((labelingState % totalStates) == 5) {
-
         auto pair = std::pair<bRect, bRectTransform>(
                     currentBox,
                     currentLabeledImage->findRectTransform(
@@ -215,7 +215,7 @@ void ImageLabelingScene::save()
                         tempSavedPoints[3].toPoint()
                         )
                     );
-        currentLabeledImage->bBoxes->operator[](labelingState/totalStates) = pair;
+        currentLabeledImage->setBbox(pair, labelingState/totalStates);
 
         QGraphicsPathItem *path = dynamic_cast<QGraphicsPathItem*>(gTempItems["path"]);
         QGraphicsPolygonItem *poly = new QGraphicsPolygonItem(path->path().toFillPolygon());
@@ -307,7 +307,6 @@ void ImageLabelingScene::back()
 
             QGraphicsPathItem *path = modifyOrNew<QGraphicsPathItem>(gTempItems, "path");
             path->setPath(createPath(tempSavedPoints, 3));
-
             // we don't decrement labelingState, we just return everything to pre-case5: in mouseClickImage state
         }
         break; }
@@ -360,10 +359,8 @@ template<typename T>
 T* ImageLabelingScene::modifyOrNew(QMap<QString, QGraphicsItem*> &map, QString itemStr){
     auto item = map.find(itemStr);
     if (item != map.end()){
-        qDebug() << "modifyOrNew() Existing Item";
         return dynamic_cast<T*>(item.value());
     } else {
-        qDebug() << "modifyOrNew() New Item";
         T* retItem = new T();
         map[itemStr] = retItem;
         this->addItem(retItem);

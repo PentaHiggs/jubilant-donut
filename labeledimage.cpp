@@ -5,6 +5,7 @@
 LabeledImage::LabeledImage() : QGraphicsPixmapItem()
 {
     setAcceptHoverEvents(true);
+    bBoxes = new QVector< std::pair<bRect, bRectTransform> >();
 }
 
 LabeledImage::~LabeledImage() {
@@ -76,4 +77,11 @@ bRectTransform LabeledImage::findRectTransform(bRect R, QPoint A, QPoint B, QPoi
 
     return b;
     //return bRectTransform();
+}
+void LabeledImage::setBbox(std::pair<bRect, bRectTransform> box, int index){
+    if (index < this->bBoxes->size()) {
+        this->bBoxes->replace(index, box);
+    } else {
+        this->bBoxes->append(box);
+    }
 }
