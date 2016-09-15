@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QFileDialog>
+#include <QDebug>
 
 XmlImageSaver::XmlImageSaver()
 {
@@ -12,6 +13,7 @@ XmlImageSaver::XmlImageSaver()
     writer.writeStartDocument();
     writer.writeDTD("<!DOCTYPE picture_batch>");
     writer.writeStartElement("picture_batch");
+    qDebug() << "XmlImageSaver :16";
 }
 
 
@@ -30,18 +32,20 @@ void XmlImageSaver::saveXml()
                 QString("XML File (*.xml)"));
     QFile file(filename);
     file.open( QIODevice::WriteOnly );
-
+    qDebug() << "33: xmlimagesaver.cpp";
     QByteArray buffer;
     int chunkSize = 100;
-    while ( !(buffer = temp.read(chunkSize)).isEmpty())
+    temp.seek(0); // We can't forget to go back to beginning of temp file, or else no reading occurs
+    while ( !((buffer = temp.read(chunkSize)).isEmpty()))
     {
         file.write(buffer);
+        qDebug() << "39: xmlimagesaver.cpp";
     }
     temp.close();
     file.close();
 }
 
-void XmlImageSaver::toXml(LabeledImage* img)
+void XmlImageSaver::toXml(LabeledImage const* img)
 {
     writer.writeStartElement("picture");
     writer.writeTextElement("label",img->label);
@@ -49,6 +53,7 @@ void XmlImageSaver::toXml(LabeledImage* img)
 
     writer.writeStartElement("bounding_boxes");
     for (const std::pair<bRect, bRectTransform> &box : *(img->bBoxes)) {
+        qDebug() << "55: xmlImageSaver.cpp";
         writer.writeStartElement("bounding_box");
 
         writer.writeStartElement("bounding_rect");

@@ -16,6 +16,7 @@ public:
     ImageLabelingScene();
     ImageLabelingScene(LabeledImage &labeledImage);
     LabeledImage* changeImage(LabeledImage &labeledImage);
+    const LabeledImage* returnCurrentImage() const;
     ~ImageLabelingScene();
 
 public slots:

@@ -147,15 +147,18 @@ void window_main::on_pushButtonNo_clicked()
 {
     // Insert some code for adding the image to the XML file
     LabeledImage* labeledImage;
-    LabeledImage* oldImage = nullptr;
+    xmlImageSaver->toXml(scene->returnCurrentImage());
+    qDebug() << "Successful save!";
     // Load the next image
-    if  ( (labeledImage = xmlImageLoader->next()) != nullptr)
-        xmlImageSaver->toXml(hookUpImage(labeledImage, this->scene));
+    if  ( (labeledImage = xmlImageLoader->next()) != nullptr){
+        qDebug() << "New image hookup attempted";
+        hookUpImage(labeledImage, this->scene);
+    }
     else {
         // We're outta stuff!  Let XML know
+        qDebug() << "File Save attempted";
         xmlImageSaver->saveXml();
     }
-
 }
 
 LabeledImage* hookUpImage(LabeledImage* labeledImage, ImageLabelingScene* scene){

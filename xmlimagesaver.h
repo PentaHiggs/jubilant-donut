@@ -15,7 +15,7 @@ public:
     ~XmlImageSaver();
 
     void saveXml();
-    void toXml(LabeledImage*);
+    void toXml(LabeledImage const*);
 private:
     QXmlStreamWriter writer;
     QTemporaryFile temp;

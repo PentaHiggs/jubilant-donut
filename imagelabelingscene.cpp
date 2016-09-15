@@ -31,6 +31,11 @@ ImageLabelingScene::ImageLabelingScene(LabeledImage &labeledImage) :
 ImageLabelingScene::~ImageLabelingScene() {
 }
 
+const LabeledImage* ImageLabelingScene::returnCurrentImage() const{
+    const LabeledImage* cptr = currentLabeledImage;
+    return cptr;
+}
+
 void ImageLabelingScene::mouseEnterImage(QPointF point)
 {
     qDebug() << "mouseEnterImage @ " << point << " w/ state" << labelingState;

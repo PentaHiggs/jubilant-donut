@@ -56,7 +56,7 @@ LabeledImage* XmlImageLoader::loadPicture(){
         QString label = xml.readElementText();
         img->label = label;
     } else {
-        qDebug() << "Invalid XML reading state: attempted to read label but failed";
+        qDebug() << "Invalid XML reading state: attempted to read label but failed [ or reached end ]";
         return nullptr;
     }
 
