@@ -57,10 +57,10 @@ void XmlImageSaver::toXml(LabeledImage const* img)
         writer.writeStartElement("bounding_box");
 
         writer.writeStartElement("bounding_rect");
-        writer.writeTextElement("x", QString(box.first.x));
-        writer.writeTextElement("y", QString(box.first.y));
-        writer.writeTextElement("w", QString(box.first.w));
-        writer.writeTextElement("h", QString(box.first.h));
+        writer.writeTextElement("x", QString::number(box.first.x));
+        writer.writeTextElement("y", QString::number(box.first.y));
+        writer.writeTextElement("w", QString::number(box.first.w));
+        writer.writeTextElement("h", QString::number(box.first.h));
         writer.writeEndElement(); // /bounding_rect
 
         writer.writeStartElement("brect_transform");

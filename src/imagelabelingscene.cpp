@@ -220,7 +220,7 @@ void ImageLabelingScene::save()
                         tempSavedPoints[3].toPoint()
                         )
                     );
-        currentLabeledImage->setBbox(pair, labelingState/totalStates);
+        currentLabeledImage->setBbox(pair, int(labelingState/totalStates));
 
         QGraphicsPathItem *path = dynamic_cast<QGraphicsPathItem*>(gTempItems["path"]);
         QGraphicsPolygonItem *poly = new QGraphicsPolygonItem(path->path().toFillPolygon());
