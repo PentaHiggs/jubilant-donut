@@ -24,7 +24,7 @@ std::string arraysToString(array<float,9> a, array<float,9> b) {
 }
 
 void Test_projectiveTransform::compareMatrices(array<float,9> a, array<float,9> b, float tol ) {
-    bool pass;
+    bool pass = true;
     for(int i = 0; i < 9; i++) {
         if (std::abs(a[i] - b[i]) >= tol) {
             pass = false;
@@ -45,7 +45,7 @@ void Test_projectiveTransform::identity() {
     array<pair<int,int>,4> out = {pair<int,int>(10,10), pair<int,int>(100,10), pair<int,int>(100,100), pair<int,int>(10,100)};
     
     // We should expect the identity transformation
-    array<float,9> out_mat = {1.,0,0, 0,1.,0, 0,0,1.};
+    array<float,9> out_mat = {.57735027,0,0, 0,.57735027,0, 0,0,.57735027};
     compareMatrices(out_mat, projectiveTransform(in,out));
 }
 

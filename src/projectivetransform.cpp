@@ -13,8 +13,6 @@ std::array<float,9> projectiveTransform(std::array<std::pair<int,int>,4> inPoint
      * The output is an array of floats, the input is two arrays of length four of pairs of int.
      *
      */
-
-
     int x1 = inPoints[0].first; int y1 = inPoints[0].second;
     int x2 = inPoints[1].first; int y2 = inPoints[1].second;
     int x3 = inPoints[2].first; int y3 = inPoints[2].second;
@@ -25,7 +23,6 @@ std::array<float,9> projectiveTransform(std::array<std::pair<int,int>,4> inPoint
     int X3 = outPoints[2].first; int Y3 = outPoints[2].second;
     int X4 = outPoints[3].first; int Y4 = outPoints[3].second;
 
-    // Solving M*s=0 for s will yield the 9 elements of the projective space transformation matrix
     Eigen::Matrix<float, 8, 9> M;
     M<<     x1, y1, 1,  0,  0,  0,  -1*X1*x1,   -1*X1*y1,   -1*X1,
             0,  0,  0,  x1, y1, 1,  -1*Y1*x1,   -1*Y1*y1,   -1*Y1,
@@ -36,13 +33,13 @@ std::array<float,9> projectiveTransform(std::array<std::pair<int,int>,4> inPoint
             x4, y4, 1,  0,  0,  0,  -1*X4*x4,   -1*X4*y4,   -1*X4,
             0,  0,  0,  x4, y4, 1,  -1*Y4*x4,   -1*Y4*y4,   -1*Y4;
 
-
-    Eigen::Matrix<float, 8, 1> z;
-    z << 0, 0, 0, 0, 0, 0, 0, 0;
-    Eigen::Matrix<float, 9, 1> s = M.colPivHouseholderQr().solve(z);
-    Eigen::Matrix<float, 9, 1> m = s.normalized();
-
+    // The kernel of M is the set of all matrices that transform inPoints to outPoints.  For simpicity, we fix
+    // the matrices via normalization to one unique matrix corresponding to this kernel.
+    Eigen::Matrix<float,9,1> s = M.fullPivLu().kernel();
+    Eigen::Matrix<float,9,1> m = s.normalized();
     std::array<float,9> retArray = std::array<float,9>();
     for(int i=0; i<9; i++) retArray[i]=m(i,0);
     return retArray;
+}
+
 }
