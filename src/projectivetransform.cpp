@@ -41,5 +41,3 @@ std::array<float,9> projectiveTransform(std::array<std::pair<int,int>,4> inPoint
     for(int i=0; i<9; i++) retArray[i]=m(i,0);
     return retArray;
 }
-
-}

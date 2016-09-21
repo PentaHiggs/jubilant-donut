@@ -18,6 +18,8 @@ LabeledImage::~LabeledImage() {
 void LabeledImage::setImage(QPixmap& pix, QString& url) {
     this->setPixmap(pix);
     this->url = url;
+    this->width = pix.width();
+    this->height = pix.height();
 }
 
 void LabeledImage::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
